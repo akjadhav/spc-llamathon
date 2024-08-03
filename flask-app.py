@@ -1,18 +1,22 @@
 # ngrok http 5002
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify # type: ignore
 import hmac
 import hashlib
 import shutil
-from git import Repo, GitCommandError
+from git import Repo, GitCommandError # type: ignore
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 import re
+from flask_cors import CORS
+
 from graph_node import GraphNode
+from graph_traversal import create_traversal_list_from_nodes
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -42,10 +46,23 @@ def webhook():
             pr_number = pr['number']
             head_ref = pr['head']['ref']
             base_ref = pr['base']['ref']
+            print('\n\n')
             process_pull_request(repo_name, pr_number, head_ref, base_ref)
             return jsonify({'message': 'PR processed'}), 200
 
     return jsonify({'message': 'Event not handled'}), 200
+
+@app.route('/api/update', methods=['GET'])
+def send_update():
+    data = {
+        "message": "Hello from Flask!",
+        "items": [
+            {"id": 1, "name": "Item 1"},
+            {"id": 2, "name": "Item 2"},
+            {"id": 3, "name": "Item 3"}
+        ]
+    }
+    return jsonify(data)
 
 def parse_diff_for_filenames_and_functions(diff_output, repo_path):
     # Regular expression to match the diff header line that contains the file name and path
@@ -55,6 +72,7 @@ def parse_diff_for_filenames_and_functions(diff_output, repo_path):
         (?!.*\bif\b)                  # Ignore lines containing "if"
         (?:static\s+)?                # Optional 'static' keyword
         (?:async\s+)?                 # Optional 'async' keyword
+        (?:function\s+)?              # Optional 'function' keyword
         (?:\*?\s*)?                   # Optional '*' for generator functions
         (\w+)\s*\([^)]*\)\s*\{        # Function name with parameters
         |                             # OR
@@ -111,6 +129,9 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
     functions = []
     full_path = os.path.join(repo_path, file_path)
 
+    print(f"Full path: {full_path}")
+    print(f"Changed lines: {changed_lines}")
+
     if os.path.exists(full_path):
         with open(full_path, 'r') as f:
             file_contents = f.readlines()
@@ -122,7 +143,8 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
             # Look backwards from the changed line to find the wrapping function
             for i in range(line_num - 1, -1, -1):
                 line = file_contents[i].strip()
-                if not re.search(r'\bif\b', line) and '{' in line:
+                if not re.search(r'\bif\b', line) and '{' and "while" and "for" and "if" in line:
+                    print(f"Line: {line}")
                     function_match = function_regex.search(line)
                     if function_match:
                         function_name = function_match.group(1) or function_match.group(2)
@@ -139,7 +161,6 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
                     if open_braces == 0:
                         function_end_line_num = j + 1
                         break
-
                 functions.append((function_name, function_start_line_num, function_end_line_num))
 
     return functions
@@ -187,12 +208,22 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
 
         print(f"Changed files: {changed_files}")
 
+        all_changed_nodes = []
+
         for file in changed_files:
             if file:
                 diff = repo.git.diff(merge_base, head_ref, file)
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
+                print(parsed_diff)
                 for node in parsed_diff:
                     print(f"{node.toString()}")
+                all_changed_nodes.extend(parsed_diff)
+
+        # Create a graph from the changed nodes
+        # node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        # print("============ Node List ============")
+        # print(node_list)
+        # print("===================================")
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:

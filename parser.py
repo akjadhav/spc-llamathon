@@ -25,11 +25,16 @@ def create_dependency_graph(paths):
     json_data = get_func_dependencies_json(paths)
     
     for f, dependencies in json_data.items():
-        graph.add_node(f, data=Node(f, dependencies["path"], dependencies["start"], dependencies["end"]))
+        graph.add_node(Node(f, dependencies["path"], dependencies["start"], dependencies["end"]))
 
     for f, dependencies in json_data.items():
+        a = Node(f, dependencies["path"], dependencies["start"], dependencies["end"])
         for dep in dependencies["dependencies"]:
-            graph.add_edge(f, dep)
+            # Note: Nodes are indexed by function name and file path
+            # Line number is not included, since in this context it refers to
+            # the function call location rather than definition location
+            b = Node(dep["name"], dep["path"], dep["start"], dep["end"])
+            graph.add_edge(a, b)
 
     return graph
 

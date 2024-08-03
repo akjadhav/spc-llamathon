@@ -47,7 +47,7 @@ export default function Home() {
             <button
               className='animate-pulse bg-white duration-300 ease-in-out font-semibold hover:bg-gray-200 px-8 py-4 rounded-full shadow-lg text-black transition'
               onClick={() => {
-                window.location.href = '/codeninja';
+                window.location.href = '/ninja';
               }}
               style={{ animation: 'pulse 2s infinite' }}>
               Experience

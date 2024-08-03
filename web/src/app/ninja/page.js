@@ -13,26 +13,24 @@ const CodeNinja = () => {
   const [jobID, setJobID] = useState('');
   const [status, setStatus] = useState('');
 
-  useEffect(() => {
-    const fetchAgentStatus = async () => {
-      try {
-        const response = await fetch(api_endpoint + '/' + jobID + '/status');
-        var jsonData = await response.json();
+  // useEffect(() => {
+  //   const fetchAgentStatus = async () => {
+  //     try {
+  //       const response = await fetch(api_endpoint + '/' + jobID + '/status');
+  //       var jsonData = await response.json();
 
-        const status = jsonData.status;
-        setStatus(status);
-      } catch (error) {
-        // console.error('Failed to fetch data:', error);
-      }
-    };
+  //       const status = jsonData.status;
+  //       setStatus(status);
+  //     } catch (error) {
+  //       // console.error('Failed to fetch data:', error);
+  //     }
+  //   };
 
-    fetchAgentStatus();
-    const intervalId = setInterval(fetchAgentStatus, 1000);
+  //   fetchAgentStatus();
+  //   const intervalId = setInterval(fetchAgentStatus, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [jobID]);
-
-  // TODO: gaurdrails
+  //   return () => clearInterval(intervalId);
+  // }, [jobID]);
 
   return (
     <div className='bg-gray-900 flex flex-col w-screen h-screen text-white'>
