@@ -4,18 +4,16 @@ import os
 
 load_dotenv()
 
-model_id = os.getenv("BASETEN_MODEL_ID")
-baseten_api_key = os.getenv("BASETEN_API_KEY")
+# model_id = os.getenv("BASETEN_MODEL_ID")
+# baseten_api_key = os.getenv("BASETEN_API_KEY")
 
-messages = [
-    {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
-    {"role": "user", "content": "Who are you?"},
-]
+model_id = os.getenv("BASETEN_405_MODEL_ID")
+baseten_api_key = os.getenv("BASETEN_405_API_KEY")
+
 data = {
-    "messages": messages,
+    "prompt": "Who is Nahum Maru?",
     "stream": True,
-    "max_new_tokens": 512,
-    "temperature": 0.9
+    "max_tokens": 1024
 }
 
 # Call model endpoint
