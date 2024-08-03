@@ -8,7 +8,9 @@ from git import Repo, GitCommandError
 import os
 from dotenv import load_dotenv
 import re
+
 from graph_node import GraphNode
+from graph_traversal import create_graph_from_nodes
 
 load_dotenv()
 
@@ -187,12 +189,18 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
 
         print(f"Changed files: {changed_files}")
 
+        all_changed_nodes = []
+
         for file in changed_files:
             if file:
                 diff = repo.git.diff(merge_base, head_ref, file)
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
                 for node in parsed_diff:
                     print(f"{node.toString()}")
+                all_changed_nodes.extend(parsed_diff)
+
+        # Create a graph from the changed nodes
+        create_graph_from_nodes(all_changed_nodes)
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:
