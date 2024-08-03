@@ -4,10 +4,13 @@
   "description": "Python env cd llamathon-env/bin && source activate && cd ../..",
   "main": "parser.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Alexander Waitz",
   "dependencies": {
     "esprima": "^4.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
