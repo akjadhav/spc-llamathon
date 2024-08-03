@@ -166,3 +166,6 @@ web/.next/*
 !requirements.txt
 .env
 .DS_Store
+.env
+node_modules
+package-lock.json
