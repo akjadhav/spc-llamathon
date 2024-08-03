@@ -201,6 +201,9 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
 
         # Create a graph from the changed nodes
         node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        print("============ Node List ============")
+        print(node_list)
+        print("===================================")
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:
