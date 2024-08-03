@@ -8,16 +8,22 @@ function parseCodeToAST(code) {
 function findFunctionDefinitions(ast) {
   const functions = [];
 
-  function traverse(node, parent = null) {
+  function traverse(node, parent = null, className = null) {
       if (node.type === 'FunctionDeclaration') {
-          functions.push({ node, name: node.id.name });
+          functions.push({ node, name: node.id.name, className });
+      } else if (node.type === 'MethodDefinition' && parent && parent.type === 'ClassBody') {
+          functions.push({ node, name: node.key.name, className });
       } else if ((node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') && parent && parent.key) {
-          functions.push({ node, name: parent.key.name });
+          functions.push({ node, name: parent.key.name, className });
+      }
+
+      if (node.type === 'ClassDeclaration') {
+          className = node.id.name;
       }
 
       for (let key in node) {
           if (node[key] && typeof node[key] === 'object' && key !== 'parent') {
-              traverse(node[key], node);
+              traverse(node[key], node, className);
           }
       }
   }
@@ -51,9 +57,12 @@ function buildDependencyGraph(code) {
   const functionMap = new Map();
 
   // Map each function to its name and its node in the AST
-  functions.forEach(({ node, name }) => {
+  functions.forEach(({ node, name, className }) => {
       if (name) {
-          functionMap.set(name, node);
+          if (className !== null) {
+              name = `${className}.${name}`;
+          }
+          functionMap.set(name, { node, className });
       }
   });
 
@@ -61,24 +70,27 @@ function buildDependencyGraph(code) {
 
   // Initialize graph nodes
   functionMap.forEach((func, name) => {
-    console.log(func, name)
-      graph[name] = { start: func.loc.start.line, 
-                      end: func.loc.end.line,
+    // console.log(func)
+      graph[name] = { start: func.node.loc.start.line, 
+                      end: func.node.loc.end.line,
+                      class_name: func.className,
                       dependencies: [] };
   });
 
   // Identify dependencies
   functionMap.forEach((func, name) => {
-    const calls = findFunctionCalls(func.body);
+    const calls = findFunctionCalls(func.node.body);
     calls.forEach(call => {
         const callee = call.callee;
         if (callee.type === 'Identifier' && functionMap.has(callee.name)) {
             graph[name].dependencies.push(callee.name);
+            // console.log(callee)
         } else if (callee.type === 'MemberExpression' && callee.object.type === 'Identifier' && functionMap.has(callee.object.name)) {
             graph[name].dependencies.push(callee.object.name);
+            // console.log(callee)
         }
     });
-});
+  });
 
   return graph;
 }
@@ -93,4 +105,4 @@ try {
     console.log(JSON.stringify(graph, null, 2));
   } catch (err) {
     console.error('Error reading file:', err);
-  }  
+  }

@@ -17,10 +17,16 @@ def create_dependency_graph(path):
     json_data = get_func_dependencies_json(path)
     
     for function, dependencies in json_data.items():
+        # name = None
+        # if dependencies["class_name"] is None:
+        #     name = function
+        # else:
+        #     name = dependencies["class_name"] + "." + function
+        # graph.add_node(name)
         graph.add_node(function)
 
     for function, dependencies in json_data.items():
-        for dep in dependencies.dependencies:
+        for dep in dependencies["dependencies"]:
             graph.add_edge(function, dep)
 
     return graph
