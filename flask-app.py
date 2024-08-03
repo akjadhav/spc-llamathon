@@ -16,7 +16,7 @@ from graph_traversal import create_traversal_list_from_nodes
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -104,11 +104,14 @@ def parse_diff_for_filenames_and_functions(diff_output, repo_path):
         elif current_file and line.startswith('@@'):
             # Extract line numbers from diff hunk header
             hunk_header = line
-            start_line = int(re.search(r'\+(\d+)', hunk_header).group(1))
-            current_changes.append(start_line)
+            matches = re.search(r'\+(\d+),(\d+)', hunk_header)
+            if matches:
+                start_line = int(matches.group(1))
+                line_count = int(matches.group(2))
+                current_changes.extend(range(start_line, start_line + line_count))
         elif current_file and line.startswith('+') and not line.startswith('+++'):
             # Collect the actual line changes
-            current_changes[-1] += 1
+            current_changes.append(len(current_changes) + 1)
 
     node_list = []
 
@@ -129,8 +132,7 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
     functions = []
     full_path = os.path.join(repo_path, file_path)
 
-    print(f"Full path: {full_path}")
-    print(f"Changed lines: {changed_lines}")
+    print(f'changed_lines: {changed_lines}')
 
     if os.path.exists(full_path):
         with open(full_path, 'r') as f:
@@ -143,8 +145,7 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
             # Look backwards from the changed line to find the wrapping function
             for i in range(line_num - 1, -1, -1):
                 line = file_contents[i].strip()
-                if not re.search(r'\bif\b', line) and '{' and "while" and "for" and "if" in line:
-                    print(f"Line: {line}")
+                if not re.search(r'\bif\b', line) and '{' in line and "while" not in line and "for" not in line and "switch" not in line:
                     function_match = function_regex.search(line)
                     if function_match:
                         function_name = function_match.group(1) or function_match.group(2)
@@ -220,10 +221,10 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 all_changed_nodes.extend(parsed_diff)
 
         # Create a graph from the changed nodes
-        # node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
-        # print("============ Node List ============")
-        # print(node_list)
-        # print("===================================")
+        node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        print("============ Node List ============")
+        print(node_list)
+        print("===================================")
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:
