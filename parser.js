@@ -5,16 +5,16 @@ function parseCodeToAST(code) {
   return esprima.parseScript(code, { range: true, loc: true });
 }
 
-function findFunctionDefinitions(ast) {
+function findFunctionDefinitions(ast, arg) {
   const functions = [];
 
   function traverse(node, parent = null, className = null) {
       if (node.type === 'FunctionDeclaration') {
-          functions.push({ node, name: node.id.name, className });
+          functions.push({ node, name: node.id.name, className, arg: arg });
       } else if (node.type === 'MethodDefinition' && parent && parent.type === 'ClassBody') {
-          functions.push({ node, name: node.key.name, className });
+          functions.push({ node, name: node.key.name, className, arg: arg });
       } else if ((node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') && parent && parent.key) {
-          functions.push({ node, name: parent.key.name, className });
+          functions.push({ node, name: parent.key.name, className, arg: arg });
       }
 
       if (node.type === 'ClassDeclaration') {
@@ -56,21 +56,19 @@ function buildDependencyGraph(args) {
   for (const arg of args) {
     const code = fs.readFileSync(arg, 'utf8');
     const ast = parseCodeToAST(code);
-    functions = functions.concat(findFunctionDefinitions(ast));
+    const defs = findFunctionDefinitions(ast, arg);
+    functions = functions.concat(defs);
   }
-  // let code = fs.readFileSync(arg, 'utf8');
 
-  // const ast = parseCodeToAST(code);
-  // const functions = findFunctionDefinitions(ast);
   const functionMap = new Map();
 
   // Map each function to its name and its node in the AST
-  functions.forEach(({ node, name, className }) => {
+  functions.forEach(({ node, name, className, arg }) => {
       if (name) {
           if (className !== null) {
               name = `${className}.${name}`;
           }
-          functionMap.set(name, { node, className });
+          functionMap.set(name, { node, className, arg });
       }
   });
 
@@ -82,6 +80,7 @@ function buildDependencyGraph(args) {
       graph[name] = { start: func.node.loc.start.line, 
                       end: func.node.loc.end.line,
                       class_name: func.className,
+                      path: func.arg,
                       dependencies: [] };
   });
 
