@@ -1,6 +1,7 @@
 import subprocess
 import json
 import networkx as nx
+import sys
 import matplotlib.pyplot as plt
 
 def get_func_dependencies_json(file_path):
@@ -10,26 +11,25 @@ def get_func_dependencies_json(file_path):
     data = json.loads(json_str)
     return data
 
+# Create graph for a single path
 def create_dependency_graph(path):
     graph = nx.DiGraph()
     json_data = get_func_dependencies_json(path)
-
-    print(json_data)
     
     for function, dependencies in json_data.items():
         graph.add_node(function)
 
     for function, dependencies in json_data.items():
-        for dep in dependencies:
+        for dep in dependencies.dependencies:
             graph.add_edge(function, dep)
 
     return graph
 
-G = create_dependency_graph("/Users/cc/Code/llamathon/spc-llamathon-example/components/auth/auth.controller.js")
+def plot_graph(graph):
+    nx.draw(graph, with_labels=True, node_color='lightblue', node_size=500, font_weight='bold', edge_color='gray')
+    plt.show()
 
-print(G)
-
-nx.draw(G, with_labels=True, node_color='lightblue', node_size=500, font_weight='bold', edge_color='gray')
-
-# Show the plot
-plt.show()
+if __name__ == "__main__":
+    path = sys.argv[1]
+    G = create_dependency_graph(path)
+    plot_graph(G)

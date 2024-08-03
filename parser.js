@@ -2,7 +2,7 @@ const esprima = require('esprima');
 const fs = require('fs');
 
 function parseCodeToAST(code) {
-  return esprima.parseScript(code, { range: true });
+  return esprima.parseScript(code, { range: true, loc: true });
 }
 
 function findFunctionDefinitions(ast) {
@@ -61,7 +61,10 @@ function buildDependencyGraph(code) {
 
   // Initialize graph nodes
   functionMap.forEach((func, name) => {
-      graph[name] = [];
+    console.log(func, name)
+      graph[name] = { start: func.loc.start.line, 
+                      end: func.loc.end.line,
+                      dependencies: [] };
   });
 
   // Identify dependencies
@@ -70,9 +73,9 @@ function buildDependencyGraph(code) {
     calls.forEach(call => {
         const callee = call.callee;
         if (callee.type === 'Identifier' && functionMap.has(callee.name)) {
-            graph[name].push(callee.name);
+            graph[name].dependencies.push(callee.name);
         } else if (callee.type === 'MemberExpression' && callee.object.type === 'Identifier' && functionMap.has(callee.object.name)) {
-            graph[name].push(callee.object.name);
+            graph[name].dependencies.push(callee.object.name);
         }
     });
 });
