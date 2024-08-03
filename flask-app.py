@@ -54,15 +54,17 @@ def webhook():
 
 @app.route('/api/update', methods=['GET'])
 def send_update():
-    data = {
-        "message": "Hello from Flask!",
-        "items": [
-            {"id": 1, "name": "Item 1"},
-            {"id": 2, "name": "Item 2"},
-            {"id": 3, "name": "Item 3"}
-        ]
-    }
-    return jsonify(data)
+    data = [{
+        'key': 'Update received',
+        'type': 'text',
+        'pathFileName': 'Update received',
+        'description': 'Update received',
+        'inProgress': False
+    }]
+
+    response = jsonify(data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
 
 def parse_diff_for_filenames_and_functions(diff_output, repo_path):
     # Regular expression to match the diff header line that contains the file name and path
