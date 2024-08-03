@@ -3,8 +3,6 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 // import ChatInterface from '../../components/chat/Chat';
 
-import { api_endpoint } from '../../api_endpoint';
-
 import WorkspaceComponent from '../../components/workspace-components/WorkspaceComponents';
 import Terminal from '../../components/terminal/Terminal';
 

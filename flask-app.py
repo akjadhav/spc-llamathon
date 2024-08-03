@@ -55,10 +55,10 @@ def webhook():
 @app.route('/api/update', methods=['GET'])
 def send_update():
     data = [{
-        'key': 'Update received',
+        'key': 'Update not sent',
         'type': 'text',
         'pathFileName': 'Update received',
-        'description': 'Update received',
+        'description': 'Update not sent',
         'inProgress': False
     }]
 
