@@ -11,9 +11,10 @@ model_id = os.getenv("BASETEN_405_MODEL_ID")
 baseten_api_key = os.getenv("BASETEN_405_API_KEY")
 
 data = {
-    "prompt": "Who is Nahum Maru?",
+    "prompt": "Generate example tests using Jest.",
     "stream": True,
-    "max_tokens": 1024
+    "max_tokens": 5000,
+    "temperature": 0.9
 }
 
 # Call model endpoint
