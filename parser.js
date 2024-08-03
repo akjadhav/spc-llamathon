@@ -5,16 +5,16 @@ function parseCodeToAST(code) {
   return esprima.parseScript(code, { range: true, loc: true });
 }
 
-function findFunctionDefinitions(ast, arg) {
+function findFunctionDefinitions(ast, path) {
   const functions = [];
 
   function traverse(node, parent = null, className = null) {
       if (node.type === 'FunctionDeclaration') {
-          functions.push({ node, name: node.id.name, className, arg: arg });
+          functions.push({ node, name: node.id.name, className, path: path });
       } else if (node.type === 'MethodDefinition' && parent && parent.type === 'ClassBody') {
-          functions.push({ node, name: node.key.name, className, arg: arg });
+          functions.push({ node, name: node.key.name, className, path: path });
       } else if ((node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') && parent && parent.key) {
-          functions.push({ node, name: parent.key.name, className, arg: arg });
+          functions.push({ node, name: parent.key.name, className, path: path });
       }
 
       if (node.type === 'ClassDeclaration') {
@@ -51,24 +51,24 @@ function findFunctionCalls(node) {
   return calls;
 }
 
-function buildDependencyGraph(args) {
+function buildDependencyGraph(paths) {
   let functions = [];
-  for (const arg of args) {
-    const code = fs.readFileSync(arg, 'utf8');
+  for (const path of paths) {
+    const code = fs.readFileSync(path, 'utf8');
     const ast = parseCodeToAST(code);
-    const defs = findFunctionDefinitions(ast, arg);
+    const defs = findFunctionDefinitions(ast, path);
     functions = functions.concat(defs);
   }
 
   const functionMap = new Map();
 
   // Map each function to its name and its node in the AST
-  functions.forEach(({ node, name, className, arg }) => {
+  functions.forEach(({ node, name, className, path }) => {
       if (name) {
           if (className !== null) {
               name = `${className}.${name}`;
           }
-          functionMap.set(name, { node, className, arg });
+          functionMap.set(name, { node, className, path });
       }
   });
 
@@ -76,11 +76,10 @@ function buildDependencyGraph(args) {
 
   // Initialize graph nodes
   functionMap.forEach((func, name) => {
-    // console.log(func)
       graph[name] = { start: func.node.loc.start.line, 
                       end: func.node.loc.end.line,
                       class_name: func.className,
-                      path: func.arg,
+                      path: func.path,
                       dependencies: [] };
   });
 
@@ -90,11 +89,22 @@ function buildDependencyGraph(args) {
     calls.forEach(call => {
         const callee = call.callee;
         if (callee.type === 'Identifier' && functionMap.has(callee.name)) {
-            graph[name].dependencies.push(callee.name);
-            // console.log(callee)
+            // graph[name].dependencies.push(callee.name);
+            graph[name].dependencies.push({
+              name: callee.name,
+              path: func.path,
+              start: call.loc.start.line,
+              end: call.loc.end.line
+            })
+            // console.log("hello", call);
         } else if (callee.type === 'MemberExpression' && callee.object.type === 'Identifier' && functionMap.has(callee.object.name)) {
-            graph[name].dependencies.push(callee.object.name);
-            // console.log(callee)
+            // graph[name].dependencies.push(callee.object.name);
+            graph[name].dependencies.push({
+              name: callee.object.name,
+              path: func.path,
+              start: call.loc.start.line,
+              end: call.loc.end.line
+            })
         }
     });
   });
@@ -104,9 +114,6 @@ function buildDependencyGraph(args) {
 
 try {
     const args = process.argv.slice(2);
-    // arg = args[0]
-    // const data = fs.readFileSync(arg, 'utf8');
-
     const graph = buildDependencyGraph(args);
 
     console.log(JSON.stringify(graph, null, 2));
