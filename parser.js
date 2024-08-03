@@ -51,9 +51,17 @@ function findFunctionCalls(node) {
   return calls;
 }
 
-function buildDependencyGraph(code) {
-  const ast = parseCodeToAST(code);
-  const functions = findFunctionDefinitions(ast);
+function buildDependencyGraph(args) {
+  let functions = [];
+  for (const arg of args) {
+    const code = fs.readFileSync(arg, 'utf8');
+    const ast = parseCodeToAST(code);
+    functions = functions.concat(findFunctionDefinitions(ast));
+  }
+  // let code = fs.readFileSync(arg, 'utf8');
+
+  // const ast = parseCodeToAST(code);
+  // const functions = findFunctionDefinitions(ast);
   const functionMap = new Map();
 
   // Map each function to its name and its node in the AST
@@ -97,10 +105,10 @@ function buildDependencyGraph(code) {
 
 try {
     const args = process.argv.slice(2);
-    arg = args[0]
-    const data = fs.readFileSync(arg, 'utf8');
+    // arg = args[0]
+    // const data = fs.readFileSync(arg, 'utf8');
 
-    const graph = buildDependencyGraph(data);
+    const graph = buildDependencyGraph(args);
 
     console.log(JSON.stringify(graph, null, 2));
   } catch (err) {
