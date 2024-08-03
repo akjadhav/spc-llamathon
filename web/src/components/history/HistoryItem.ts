@@ -1,19 +1,25 @@
-export type ItemType = 'text' | 'comment' | 'test';
+export type ItemType = 'text' | 'comment' | 'test'
 
 export class HistoryItem {
-  type: ItemType;
-  path: string;
-  fileName: string;
-  inProgress: boolean;
-  description: string;
+  key: string
+  type: ItemType
+  pathFileName: string
+  inProgress: boolean
+  description: string
 
-  constructor(type: ItemType, path: string, fileName: string, description: string = "", inProgress: boolean = false) {
-    this.type = type;
-    this.path = path;
-    this.fileName = fileName;
-    this.description = description;
-    this.inProgress = inProgress;
+  constructor(
+    key: string,
+    type: ItemType,
+    pathFileName: string,
+    description: string = '',
+    inProgress: boolean = false,
+  ) {
+    this.key = key
+    this.type = type
+    this.pathFileName = pathFileName
+    this.description = description
+    this.inProgress = inProgress
   }
 }
 
-export default HistoryItem;
+export default HistoryItem
