@@ -5,6 +5,8 @@ import sys
 import os
 import matplotlib.pyplot as plt
 
+from node import Node
+
 def get_func_dependencies_json(paths):
     if not isinstance(paths, list):
         paths = [paths]
@@ -22,12 +24,12 @@ def create_dependency_graph(paths):
     graph = nx.DiGraph()
     json_data = get_func_dependencies_json(paths)
     
-    for function, dependencies in json_data.items():
-        graph.add_node(function)
+    for f, dependencies in json_data.items():
+        graph.add_node(f, data=Node(f, dependencies["path"], dependencies["start"], dependencies["end"]))
 
-    for function, dependencies in json_data.items():
+    for f, dependencies in json_data.items():
         for dep in dependencies["dependencies"]:
-            graph.add_edge(function, dep)
+            graph.add_edge(f, dep)
 
     return graph
 
