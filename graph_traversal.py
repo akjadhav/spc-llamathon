@@ -18,6 +18,8 @@ def get_traversal_list(G):
 # `G` is a networkx graph 
 def _get_subtree(G, root, items_changed):
     def dfs(node, subtree):
+        if node is None:
+            return
         if node in items_changed or any(descendant in items_changed for descendant in nx.descendants(G, node)):
             subtree.add_node(node)
             for child in G.successors(node):
@@ -34,20 +36,27 @@ def _get_subtree(G, root, items_changed):
 def get_target_subtrees(graph, node_list):
     # G = nx.DiGraph()
     out = []
-    for component in nx.connected_components(graph):
+    for component in nx.weakly_connected_components(graph):
         subgraph = graph.subgraph(component)
         filtered_subgraph = _get_subtree(subgraph, find_tree_root(subgraph), node_list)
+        if filtered_subgraph.number_of_nodes() == 0:
+            continue
+
+        print("is tree:", nx.is_tree(filtered_subgraph))
 
         l = get_traversal_list(filtered_subgraph)
         out += l
-
-        # G.add_nodes_from(filtered_subgraph.nodes(data=True))
-        # G.add_edges_from(filtered_subgraph.edges(data=True))
     return l
-
 
 # Insertion point for flask-app
 def create_traversal_list_from_nodes(dir, node_list):
     paths = get_js_file_paths(dir)
     G = create_dependency_graph(paths)
     return get_target_subtrees(G, node_list)
+
+if __name__ == "__main__":
+    dir = "/Users/cc/Code/llamathon/spc-llamathon-example/utils/"
+    path = "/Users/cc/Code/llamathon/spc-llamathon-example/utils/math.js"
+    node_list = [GraphNode("multiply", path, 4, 6)]
+    out = create_traversal_list_from_nodes(dir, node_list)
+    print(out)

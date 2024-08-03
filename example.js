@@ -47,13 +47,4 @@ function fibonacci(n) {
 }
 
 // Exporting functions for use in other modules
-module.exports = {
-    add,
-    multiply,
-    square,
-    sumOfSquares,
-    factorial,
-    isEven,
-    isOdd,
-    fibonacci
-};
+module.exports = add

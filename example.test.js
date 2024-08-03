@@ -1,73 +1,94 @@
-// Import the target function and related functions
-const {
-  add,
-  multiply,
-  square,
-  sumOfSquares,
-  factorial,
-  isEven,
-  isOdd,
-  fibonacci,
-} = require('./example');
+// Import the target function
+const add = require('./example').add;
 
-// Test suite for the target function: add
 describe('add function', () => {
-  // Test case 1: Adding two positive numbers
-  it('should return the sum of two positive numbers', () => {
-    expect(add(2, 3)).toBe(5);
+    // Test case: Adding two positive numbers
+    it('should add two positive numbers correctly', () => {
+        expect(add(2, 3)).toBe(5);
+    });
+
+    // Test case: Adding two negative numbers
+    it('should add two negative numbers correctly', () => {
+        expect(add(-2, -3)).toBe(-5);
+    });
+
+    // Test case: Adding a positive and a negative number
+    it('should add a positive and a negative number correctly', () => {
+        expect(add(2, -3)).toBe(-1);
+    });
+
+    // Test case: Adding two zeros
+    it('should add two zeros correctly', () => {
+        expect(add(0, 0)).toBe(0);
+    });
+
+    // Test case: Adding a number and zero
+    it('should add a number and zero correctly', () => {
+        expect(add(5, 0)).toBe(5);
+    });
+
+    // Test case: Adding non-integer numbers
+    it('should add non-integer numbers correctly', () => {
+        expect(add(2.5, 3.7)).toBe(6.2);
+    });
+
+    // Test case: Adding non-numeric values
+    it('should return NaN when adding non-numeric values', () => {
+        expect(add('a', 2)).toBeNaN();
+    });
+
+    // Test case: Adding undefined values
+    it('should return NaN when adding undefined values', () => {
+        expect(add(undefined, 2)).toBeNaN();
+    });
+
+    // Test case: Adding null values
+    it('should return NaN when adding null values', () => {
+        expect(add(null, 2)).toBeNaN();
+    });
+});// Import the target function
+const multiply = require('./example').multiply;
+
+// Test suite for the multiply function
+describe('multiply function', () => {
+  // Test case for multiplying two positive numbers
+  it('should multiply two positive numbers correctly', () => {
+    expect(multiply(2, 3)).toBe(6);
+    expect(multiply(4, 5)).toBe(20);
   });
 
-  // Test case 2: Adding two negative numbers
-  it('should return the sum of two negative numbers', () => {
-    expect(add(-2, -3)).toBe(-5);
+  // Test case for multiplying two negative numbers
+  it('should multiply two negative numbers correctly', () => {
+    expect(multiply(-2, -3)).toBe(6);
+    expect(multiply(-4, -5)).toBe(20);
   });
 
-  // Test case 3: Adding a positive and a negative number
-  it('should return the sum of a positive and a negative number', () => {
-    expect(add(2, -3)).toBe(-1);
+  // Test case for multiplying a positive and a negative number
+  it('should multiply a positive and a negative number correctly', () => {
+    expect(multiply(2, -3)).toBe(-6);
+    expect(multiply(-4, 5)).toBe(-20);
   });
 
-  // Test case 4: Adding zero to a number
-  it('should return the number when adding zero', () => {
-    expect(add(2, 0)).toBe(2);
+  // Test case for multiplying zero with a number
+  it('should multiply zero with a number correctly', () => {
+    expect(multiply(0, 2)).toBe(0);
+    expect(multiply(3, 0)).toBe(0);
   });
 
-  // Test case 5: Adding two decimal numbers
-  it('should return the sum of two decimal numbers', () => {
-    expect(add(2.5, 3.7)).toBeCloseTo(6.2);
-  });
-});
-
-// Additional test cases to ensure the target function works correctly with other functions
-describe('integration with other functions', () => {
-  // Test case 1: Using the add function with the multiply function
-  it('should return the correct result when used with multiply', () => {
-    expect(add(multiply(2, 3), 4)).toBe(10);
+  // Test case for multiplying two zeros
+  it('should multiply two zeros correctly', () => {
+    expect(multiply(0, 0)).toBe(0);
   });
 
-  // Test case 2: Using the add function with the square function
-  it('should return the correct result when used with square', () => {
-    expect(add(square(2), 3)).toBe(7);
+  // Test case for multiplying decimal numbers
+  it('should multiply decimal numbers correctly', () => {
+    expect(multiply(2.5, 3.5)).toBeCloseTo(8.75);
+    expect(multiply(-2.5, 3.5)).toBeCloseTo(-8.75);
   });
 
-  // Test case 3: Using the add function with the sumOfSquares function
-  it('should return the correct result when used with sumOfSquares', () => {
-    expect(sumOfSquares(2, 3)).toBe(add(square(2), square(3)));
-  });
-
-  // Test case 4: Using the add function with the factorial function
-  it('should return the correct result when used with factorial', () => {
-    expect(add(factorial(3), 2)).toBe(8);
-  });
-
-  // Test case 5: Using the add function with the isEven and isOdd functions
-  it('should return the correct result when used with isEven and isOdd', () => {
-    expect(isEven(add(2, 2))).toBe(true);
-    expect(isOdd(add(2, 3))).toBe(true);
-  });
-
-  // Test case 6: Using the add function with the fibonacci function
-  it('should return the correct result when used with fibonacci', () => {
-    expect(add(fibonacci(3), fibonacci(4))).toBe(5);
+  // Test case for multiplying large numbers
+  it('should multiply large numbers correctly', () => {
+    expect(multiply(1000, 2000)).toBe(2000000);
+    expect(multiply(-1000, 2000)).toBe(-2000000);
   });
 });
