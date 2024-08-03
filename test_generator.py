@@ -14,17 +14,25 @@ class Test_Generator:
         self.api_key = os.getenv("BASETEN_API_KEY")
 
     def _call_baseten_api(self, prompt):
-        messages = [
-            {"role": "system", "content": "You are an AI that generates Jest test cases for JavaScript functions."},
-            {"role": "user", "content": prompt},
-        ]
+        # messages = [
+        #     {"role": "system", "content": "You are an AI that generates Jest test cases for JavaScript functions."},
+        #     {"role": "user", "content": prompt},
+        # ]
         
-        output = utils.generate_together(
-            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-            messages=messages,
-            max_tokens=768,
-            temperature=0.7,    
+        prompt = "You are an AI that generates Jest test cases for JavaScript functions"
+
+        output = utils.generate_baseten(
+            prompt,
+            max_tokens=2048,
+            temperature=0.7,
         )
+
+        # output = utils.generate_together(
+        #     model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        #     messages=messages,
+        #     max_tokens=768,
+        #     temperature=0.7,    
+        # )
 
         # print("Calling Baseten API with prompt:", prompt)
 
