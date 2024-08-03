@@ -12,8 +12,6 @@ load_dotenv()
 
 """
 
-
-
 class Test_Generator:
     def __init__(self):
         self.model_id = os.getenv("BASETEN_MODEL_ID")
@@ -80,18 +78,48 @@ class Test_Generator:
         test_code = self._call_baseten_api(prompt)
         return test_code
 
+    def _is_test_incorrect(self, test_code, error_message):
+        # Construct the prompt to evaluate the test and the error message
+        prompt = (
+            "You are an AI that evaluates Jest test cases for JavaScript functions. I will give you a Jest test suite and an error message. "
+            "Please determine whether the error is due to an issue in the test suite itself or the JavaScript function being tested. "
+            "Here is the Jest test suite:\n"
+            f"<<TESTS>> {test_code} <</TESTS>>\n\n"
+            "Here is the error message:\n"
+            f"<<ERROR>> {error_message} <</ERROR>>"
+            "Output one of the following:\n"
+            "1. The test suite is incorrect and needs to be revised.\n"
+            "2. The test suite is correct, and the error is due to an issue in the JavaScript function being tested."
+        )
+
+        # Call the Baseten API to evaluate the test and error message
+        evaluation = self._call_baseten_api(prompt)
+
+        # Parse the evaluation to get a boole
+        # an
+        is_test_incorrect = "The test suite is incorrect" in evaluation
+        return is_test_incorrect
+            
+
     def execute_test(self, test_code, file_path=None):
         # Write the test code to a temporary file to check that it works before we add it to the main test file
-        pdb.set_trace()
         test_file_path = "temp.test.js"
         with open(test_file_path, "w") as test_file:
             test_file.write(test_code)
         
         try:
             result = subprocess.run(['npm', 'test', '--', test_file_path], capture_output=True, text=True)
+            stdout = result.stdout
+            stderr = result.stderr
+            # # write stdout and stderr to a file
+            # with open("stdout.txt", "w") as file:
+            #     file.write(stdout)
+            # with open("stderr.txt", "w") as file:
+            #     file.write(stderr)
+            
             if result.returncode != 0:
                 # TODO: Deduce whether or not it's because the code is incorrect or if it's because the test is incorrect
-                raise Exception(result.stderr)
+                raise Exception(stderr)
         except Exception as e:
             return str(e)
         
@@ -140,18 +168,32 @@ class Test_Generator:
         for attempt in range(5):
             test_code = self.generate_test(target_function_code, target_file_info[0], context_function_codes, previous_test_code, error_message)
             extracted_tests = self._extract_tests(test_code)
+            file_path = target_file_info[0]
 
-            print(f"Generated test code:\n{test_code}")
-            result = self.execute_test(extracted_tests, target_file_info[0])  # Using the target file's path for naming the test file
+            print(f"Generated test code:\n{extracted_tests}")
+            result = self.execute_test(extracted_tests, file_path)  # Using the target file's path for naming the test file
             if "All tests passed successfully." in result:
                 return test_code
             else:
-                previous_test_code = test_code
-                # TODO: Handle this so that the new prompt includes the previous fuction code and the error message. 
-                error_message = result
-                print(f"Test failed. Attempt {attempt + 1}. Error: {result}")
+                if self._is_test_incorrect(test_code, result):
+                    previous_test_code = test_code
+                    # TODO: Handle this so that the new prompt includes the previous fuction code and the error message. 
+                    error_message = result
+                    print(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
+                else: 
+                    # The test is correct, but the function is incorrect
+                    main_test_file_path = file_path.replace(".js", ".test.js")
         
-        raise Exception("Failed to generate a passing test after 5 attempts.")
+                    # Test is valid and it works — add it to the main test file!
+                    # Check if the file exists and set the mode accordingly
+                    file_mode = 'a' if os.path.exists(main_test_file_path) else 'w'
+                    
+                    with open(main_test_file_path, file_mode) as test_file:
+                        test_file.write(extracted_tests)
+                    
+                    return extracted_tests
+        
+        raise Exception("Failed to generate a valid test after 5 attempts.")
 
 # Example usage
 if __name__ == "__main__":
@@ -170,7 +212,6 @@ if __name__ == "__main__":
         test_code = test_generator.generate_and_test(target_file_info, context_files_info)
         print("Generated test code:\n", test_code)
         
-        pdb.set_trace()
         target_file_info = ("example.js", ("multiply", 8, 11))
         context_files_info = [
             ("example.js", "square", 13, 16),

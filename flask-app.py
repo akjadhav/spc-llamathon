@@ -16,7 +16,7 @@ from graph_traversal import create_traversal_list_from_nodes
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
 
 GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -54,31 +54,47 @@ def webhook():
 
 @app.route('/api/update', methods=['GET'])
 def send_update():
-    data = {
-        "message": "Hello from Flask!",
-        "items": [
-            {"id": 1, "name": "Item 1"},
-            {"id": 2, "name": "Item 2"},
-            {"id": 3, "name": "Item 3"}
-        ]
-    }
-    return jsonify(data)
+    data = [{
+        'key': 'Update not sent',
+        'type': 'text',
+        'pathFileName': 'Update received',
+        'description': 'Update not sent',
+        'inProgress': False
+    }]
+
+    response = jsonify(data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
 
 def parse_diff_for_filenames_and_functions(diff_output, repo_path):
     # Regular expression to match the diff header line that contains the file name and path
     diff_header_regex = re.compile(r'^diff --git a/(.+?) b/\1$')
     # Regular expression to match function definitions in Node.js, ignoring lines with "if"
     function_regex = re.compile(r'''
-        (?!.*\bif\b)                  # Ignore lines containing "if"
-        (?:static\s+)?                # Optional 'static' keyword
-        (?:async\s+)?                 # Optional 'async' keyword
-        (?:function\s+)?              # Optional 'function' keyword
-        (?:\*?\s*)?                   # Optional '*' for generator functions
-        (\w+)\s*\([^)]*\)\s*\{        # Function name with parameters
-        |                             # OR
-        (?!.*\bif\b)                  # Ignore lines containing "if"
-        (\w+)\s*=\s*\([^)]*\)\s*=>\s*\{ # Arrow function expression
-    ''', re.VERBOSE)
+        ^(?!.*\bif\b)                # Ignore lines containing "if" at the beginning
+        \s*(?:                       # Optional whitespace at the start
+            (?:async\s+)?            # Optional 'async' keyword
+            (?:function\s+)?         # Optional 'function' keyword
+            (\w+)                    # Function name (group 1)
+            \s*\([^)]*\)             # Function parameters
+            \s*{                     # Opening brace
+        |                            # OR
+            (?:const|let|var)\s+     # Variable declaration
+            (\w+)                    # Function name (group 2)
+            \s*=\s*                  # Assignment
+            (?:async\s+)?            # Optional 'async' keyword
+            (?:function\s*)?         # Optional 'function' keyword
+            \([^)]*\)                # Function parameters
+            \s*=>                    # Arrow function syntax
+        |                            # OR
+            (\w+)                    # Method name (group 3)
+            \s*:\s*                  # Colon (for object method)
+            (?:async\s+)?            # Optional 'async' keyword
+            (?:function\s*)?         # Optional 'function' keyword
+            \([^)]*\)                # Function parameters
+            \s*{                     # Opening brace
+        )
+    ''', re.VERBOSE | re.MULTILINE)
 
     # Split the diff output into lines
     lines = diff_output.split('\n')
@@ -88,6 +104,7 @@ def parse_diff_for_filenames_and_functions(diff_output, repo_path):
 
     current_file = None
     current_changes = []
+    current_line = 0
 
     # Iterate over the lines to find all that match our regex
     for line in lines:
@@ -101,21 +118,28 @@ def parse_diff_for_filenames_and_functions(diff_output, repo_path):
             # Extract the new file name and path
             current_file = match.group(1)
             current_changes = []
+            current_line = 0
         elif current_file and line.startswith('@@'):
             # Extract line numbers from diff hunk header
             hunk_header = line
-            start_line = int(re.search(r'\+(\d+)', hunk_header).group(1))
-            current_changes.append(start_line)
+            matches = re.search(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@', hunk_header)
+            if matches:
+                current_line = int(matches.group(1)) - 1
+                line_count = int(matches.group(2)) if matches.group(2) else 1
         elif current_file and line.startswith('+') and not line.startswith('+++'):
             # Collect the actual line changes
-            current_changes[-1] += 1
-
-    node_list = []
+            current_line += 1
+            current_changes.append(current_line)
+        elif current_file and not line.startswith('-'):
+            # Increment line count for context lines
+            current_line += 1
 
     # Process the last collected changes
     if current_file:
         functions = find_functions_in_file(current_file, current_changes, repo_path, function_regex)
         file_functions[current_file] = functions
+
+    node_list = []
 
     for file, functions in file_functions.items():
         for function in functions:
@@ -129,39 +153,48 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
     functions = []
     full_path = os.path.join(repo_path, file_path)
 
-    print(f"Full path: {full_path}")
-    print(f"Changed lines: {changed_lines}")
-
     if os.path.exists(full_path):
         with open(full_path, 'r') as f:
             file_contents = f.readlines()
 
-        for line_num in changed_lines:
-            function_name = None
-            function_start_line_num = None
-            function_end_line_num = None
-            # Look backwards from the changed line to find the wrapping function
-            for i in range(line_num - 1, -1, -1):
-                line = file_contents[i].strip()
-                if not re.search(r'\bif\b', line) and '{' and "while" and "for" and "if" in line:
-                    print(f"Line: {line}")
-                    function_match = function_regex.search(line)
-                    if function_match:
-                        function_name = function_match.group(1) or function_match.group(2)
-                        function_start_line_num = i + 1
-                        break
+        changed_lines_set = set(changed_lines)
+        function_stack = []
+        open_braces = 0
 
-            if function_name:
-                # Find the end line number for the function
-                open_braces = 0
-                for j in range(function_start_line_num - 1, len(file_contents)):
-                    line = file_contents[j]
-                    open_braces += line.count('{')
-                    open_braces -= line.count('}')
-                    if open_braces == 0:
-                        function_end_line_num = j + 1
-                        break
-                functions.append((function_name, function_start_line_num, function_end_line_num))
+        for i, line in enumerate(file_contents, start=1):
+            stripped_line = line.strip()
+
+            # Count braces before checking for new functions
+            open_braces += stripped_line.count('{') - stripped_line.count('}')
+
+            # Check if we're entering a new function
+            match = function_regex.search(line)
+            if match:
+                function_name = match.group(1) or match.group(2) or match.group(3)
+
+                exclude_keywords = ['if', 'while', 'for', 'switch', 'catch']
+
+                if function_name and not any(keyword in line.lower() for keyword in exclude_keywords):
+                    function_stack.append((function_name, i, None))
+
+            # Check if we're exiting a function
+            while open_braces == 0 and function_stack:
+                function_name, start_line, _ = function_stack.pop()
+                current_function = (function_name, start_line, i)
+                
+                # Check if any changed lines fall within this function
+                if any(start_line <= line_num <= i for line_num in changed_lines_set):
+                    functions.append(current_function)
+
+            # print(f"Line {i}: {line.strip()}")
+            # print(f"Open braces: {open_braces}")
+            # print(f"Function stack: {function_stack}")
+            # print(f"Changed lines: {list(changed_lines_set)}")
+            # print()
+
+            # If we've processed all changed lines, we can stop
+            if changed_lines and i > max(changed_lines):
+                break
 
     return functions
 
