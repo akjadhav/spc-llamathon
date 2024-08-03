@@ -47,6 +47,12 @@ def plot_graph(graph):
 
 if __name__ == "__main__":
     dir = sys.argv[1]
-    paths = get_js_file_paths(dir)
+
+    if os.path.isfile(dir):
+        paths = [dir]
+    else:
+        paths = get_js_file_paths(dir)
+
+    # paths = get_js_file_paths(dir)
     G = create_dependency_graph(paths)
     plot_graph(G)
