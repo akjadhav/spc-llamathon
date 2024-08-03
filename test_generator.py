@@ -19,13 +19,17 @@ class Test_Generator:
         #     {"role": "user", "content": prompt},
         # ]
         
-        prompt = "You are an AI that generates Jest test cases for JavaScript functions"
-
-        output = utils.generate_baseten(
+        stream_res = utils.generate_baseten_stream(
             prompt,
             max_tokens=2048,
             temperature=0.7,
         )
+
+        output = ""
+        # stream_res will send continuous stream of data
+        for content in stream_res:
+            output += content.decode("utf-8")
+            print(output)
 
         # output = utils.generate_together(
         #     model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",

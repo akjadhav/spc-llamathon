@@ -7,7 +7,7 @@ import json
 import copy
 from llama_api_baseten import call_stream_baseten_api
 
-def generate_baseten(
+def generate_baseten_stream(
     prompt,
     max_tokens=2048,
     temperature=0.7,
@@ -16,17 +16,19 @@ def generate_baseten(
     for sleep_time in [1, 2, 4, 8, 16, 32]:
 
         try:
-            res = call_stream_baseten_api(
+            stream_res = call_stream_baseten_api(
                 prompt=prompt,
                 max_tokens=max_tokens,
                 temperature=(temperature if temperature > 1e-4 else 0),
             )
 
-            output = ""
+            return stream_res
 
-            for content in res:
-                output += content.decode("utf-8")
-                print(output)
+            # output = ""
+
+            # for content in stream_res:
+            #     output += content.decode("utf-8")
+            #     print(output)
 
             # if "error" in res.json():
 
@@ -40,8 +42,6 @@ def generate_baseten(
 
             # output = res.json()["choices"][0]["message"]["content"]
 
-            break
-
         except Exception as e:
             logger.error(f"{e} on response:")
             print(f"Retry in {sleep_time}s..")
@@ -50,7 +50,7 @@ def generate_baseten(
     if output is None:
         return output
 
-    return output.strip()
+    return ""
 
 def generate_together(
     model,
