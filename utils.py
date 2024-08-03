@@ -103,8 +103,8 @@ def generate_together(
     return output.strip()
 
 
-generate_baseten(
-    prompt="What is AGI?",
-    max_tokens=2048,
-    temperature=0.7,
-)
+# generate_baseten(
+#     prompt="What is AGI?",
+#     max_tokens=2048,
+#     temperature=0.7,
+# )
