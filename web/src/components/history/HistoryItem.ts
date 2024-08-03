@@ -1,15 +1,17 @@
-export type ItemType = 'comment' | 'test';
+export type ItemType = 'text' | 'comment' | 'test';
 
-class HistoryItem {
+export class HistoryItem {
   type: ItemType;
   path: string;
   fileName: string;
   inProgress: boolean;
+  description: string;
 
-  constructor(type: ItemType, path: string, fileName: string, inProgress: boolean) {
+  constructor(type: ItemType, path: string, fileName: string, description: string = "", inProgress: boolean = false) {
     this.type = type;
     this.path = path;
     this.fileName = fileName;
+    this.description = description;
     this.inProgress = inProgress;
   }
 }

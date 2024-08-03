@@ -167,5 +167,4 @@ web/.next/*
 .env
 .DS_Store
 .env
-node_modules
-package-lock.json
+node_modwckage-lock.json

@@ -5,10 +5,11 @@ import HistoryItem from './HistoryItem';
 
 const History = ({ jobID }) => {
     const [outputs, setOutputs] = useState([
-        new HistoryItem('comment', "./", "index.js", false),
-        new HistoryItem('comment', "./", "index.js", true),
-        new HistoryItem('test', "./", "index.js", false),
-        new HistoryItem('test', "./", "index.js", true),
+        new HistoryItem('text', "./", "index.js", "This is a comment"),
+        new HistoryItem('comment', "./", "index.js"),
+        new HistoryItem('comment', "./", "index.js", "", true),
+        new HistoryItem('test', "./", "index.js"),
+        new HistoryItem('test', "./", "index.js", "", true),
     ]);
  
     useEffect(() => {
