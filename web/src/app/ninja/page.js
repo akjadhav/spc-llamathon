@@ -35,15 +35,15 @@ const CodeNinja = () => {
   // TODO: gaurdrails
 
   return (
-    <div className='bg-gray-900 flex flex-col min-h-screen text-white'>
-      <main className='container flex flex-grow mx-auto px-2 py-8'>
+    <div className='bg-gray-900 flex flex-col w-screen h-screen text-white'>
+      <div className='flex w-full h-full mx-auto p-4'>
         <div className='pr-2 w-1/4'>
           <WorkspaceComponent jobID={jobID} />
         </div>
         <div className='pl-2 w-3/4'>
           <Terminal jobID={jobID} />
         </div>
-      </main>
+      </div>
     </div>
   );
 };

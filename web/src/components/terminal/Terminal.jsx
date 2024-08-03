@@ -1,20 +1,20 @@
 import React, { useState, useEffect, use } from 'react';
 import { api_endpoint } from '../../api_endpoint';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+SyntaxHighlighter.registerLanguage('javascript', js);
 
 const Terminal = ({ jobID }) => {
-  const [outputs, setOutputs] = useState(['$ ']);
-
-  //const jobID = '23132131';
-
-  // Function to add new output lines
-  //   const addOutput = (newOutput) => {
-  //     setOutputs((prevOutputs) => [...prevOutputs, newOutput]);
-  //   };
-
-  //   useEffect(() => {
-  //     var jobID = localStorage.getItem('jobID');
-  //     setJobID(jobID);
-  //   }, []);
+  const [fileContent, setFileContent] = useState(
+    `
+      //This is the content of the file \n
+      function test() { \n
+        console.log('Hello World');\n
+      }\n
+    `
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +26,7 @@ const Terminal = ({ jobID }) => {
 
         var setJsonData = logs.split('\n');
 
-        setOutputs(setJsonData);
+        // setOutputs(setJsonData);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
@@ -38,22 +38,22 @@ const Terminal = ({ jobID }) => {
     return () => clearInterval(intervalId);
   }, [jobID]);
 
-  // Effect to make sure the terminal is scrolled to the bottom on new output
-  useEffect(() => {
-    const terminal = document.getElementById('mock-terminal');
-    if (terminal) {
-      terminal.scrollTop = terminal.scrollHeight;
-    }
-  }, [outputs]);
-
   return (
     <div
       id='mock-terminal'
-      className='bg-black custom-height font-mono overflow-auto p-4 rounded-xl text-green-400 text-sm w-full'
-      style={{ height: '700px' }}>
-      {outputs.map((output, index) => (
-        <div key={index}>{output}</div>
-      ))}
+      className='bg-gray-950 font-mono overflow-auto p-4 rounded-xl text-green-400 text-sm h-full'
+    >
+      <SyntaxHighlighter
+        language="javascript"
+        style={atomOneDark}
+        customStyle={{
+          backgroundColor: 'transparent',
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        {fileContent}
+      </SyntaxHighlighter>
     </div>
   );
 };

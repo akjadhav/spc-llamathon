@@ -5,13 +5,14 @@ import HistoryItem from './HistoryItem';
 
 const History = ({ jobID }) => {
     const [outputs, setOutputs] = useState([
-        new HistoryItem('text', "./", "index.js", "This is a comment"),
+        new HistoryItem('text', "./", "index.js", "Git Pull Request dectected", true),
+        new HistoryItem('text', "./", "index.js", "Git Pull Request dectected", false),
         new HistoryItem('comment', "./", "index.js"),
         new HistoryItem('comment', "./", "index.js", "", true),
         new HistoryItem('test', "./", "index.js"),
         new HistoryItem('test', "./", "index.js", "", true),
     ]);
- 
+
     useEffect(() => {
         const fetchData = async () => {
             //   try {
@@ -42,13 +43,15 @@ const History = ({ jobID }) => {
     }, [outputs]);
 
     return (
-        <div
-            id='mock-terminal'
-            className='bg-gray-950 custom-height font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
-            style={{ height: '700px' }}>
-            {outputs.map((item, index) => (
-                <HistoryRow key={index} item={item}></HistoryRow>
-            ))}
+        <div className='h-full flex flex-col'>
+            <div
+                id='mock-terminal'
+                className='bg-gray-950 font-mono overflow-auto p-4 text-green-400 text-sm space-y-2 h-full'
+            >
+                {outputs.map((item, index) => (
+                    <HistoryRow key={index} item={item}></HistoryRow>
+                ))}
+            </div>
         </div>
     );
 };

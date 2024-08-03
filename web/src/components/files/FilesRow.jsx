@@ -2,7 +2,7 @@ import React from "react";
 
 const FilesRow = ({ file, index, fileSelectedIndex, setFileSelectedIndex }) => {
     return (
-        <div className={`flex items-center text-[#FDFCDC] underline ${index === fileSelectedIndex && 'bg-gray-600'} py-1 cursor-pointer`}
+        <div className={`flex items-center text-[#FDFCDC] underline ${index === fileSelectedIndex && 'bg-gray-700'} py-1 cursor-pointer`}
             onClick={() => {
                 setFileSelectedIndex(index);
             }}

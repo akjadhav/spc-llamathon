@@ -40,14 +40,15 @@ const Files = ({ jobID }) => {
     }, [files]);
 
     return (
-        <div
-            id='mock-terminal'
-            className='bg-gray-950 custom-height font-mono overflow-auto text-green-400 text-sm w-full'
-            style={{ height: '700px' }}>
-            {files.map((file, index) => (
-                <FilesRow key={index} file={file} index={index} fileSelectedIndex={fileSelectedIndex} setFileSelectedIndex={setFileSelectedIndex}></FilesRow>
-            ))}
-        </div>
+        <div className='h-full flex flex-col'>
+            <div
+                id='mock-terminal'
+                className='bg-gray-950 font-mono overflow-auto text-green-400 text-sm space-y-2 h-full'>
+                {files.map((file, index) => (
+                    <FilesRow key={index} file={file} index={index} fileSelectedIndex={fileSelectedIndex} setFileSelectedIndex={setFileSelectedIndex} />
+                ))}
+            </div>
+        </div >
     );
 };
 
