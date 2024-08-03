@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 
-const POLL_DURATION = 10000; // Poll for 10 seconds
-const POLL_INTERVAL = 1000; // Poll every 1 second
-
 export async function GET(request) {
   try {
-    const results = await pollData();
+    const result = await fetchData();
     return NextResponse.json(
-      { data: results, status: 200 },
+      { data: result, status: 200 },
     );
   } catch (error) {
     console.error('Error in GET handler:', error);
@@ -17,38 +14,23 @@ export async function GET(request) {
   }
 }
 
-async function pollData() {
-  const startTime = Date.now();
-  const results = [];
-
-  while (Date.now() - startTime < POLL_DURATION) {
-    try {
-      const result = await fetchData();
-      results.push(result);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-
-    // Wait for the next interval
-    await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
-  }
-
-  return results;
-}
-
 async function fetchData() {
   const requestOptions = {
     method: 'GET',
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'ngrok-skip-browser-warning': '69420',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
     },
   };
 
-  const response = await fetch(
-    'https://bb4f-67-188-146-74.ngrok-free.app/api/update',
-    requestOptions
-  );
+  // Add a timestamp to the URL to prevent caching
+  const timestamp = new Date().getTime();
+  const url = `https://bb4f-67-188-146-74.ngrok-free.app/api/update?t=${timestamp}`;
+
+  const response = await fetch(url, requestOptions);
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
