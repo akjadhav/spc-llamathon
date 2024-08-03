@@ -5,7 +5,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 
-from node import Node
+from graph_node import GraphNode as Node
 
 def get_func_dependencies_json(paths):
     if not isinstance(paths, list):
@@ -53,6 +53,5 @@ if __name__ == "__main__":
     else:
         paths = get_js_file_paths(dir)
 
-    # paths = get_js_file_paths(dir)
     G = create_dependency_graph(paths)
     plot_graph(G)
