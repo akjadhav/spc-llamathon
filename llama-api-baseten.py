@@ -1,5 +1,5 @@
-import requests
-from dotenv import load_dotenv
+import requests # type: ignore
+from dotenv import load_dotenv # type: ignore
 import os
 
 load_dotenv()

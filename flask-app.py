@@ -1,12 +1,12 @@
 # ngrok http 5002
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify # type: ignore
 import hmac
 import hashlib
 import shutil
-from git import Repo, GitCommandError
+from git import Repo, GitCommandError # type: ignore
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 import re
 
 from graph_node import GraphNode

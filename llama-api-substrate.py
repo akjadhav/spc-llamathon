@@ -1,5 +1,5 @@
-from substrate import Substrate, Llama3Instruct70B
-from dotenv import load_dotenv
+from substrate import Substrate, Llama3Instruct70B # type: ignore
+from dotenv import load_dotenv # type: ignore
 import os
 
 load_dotenv()
