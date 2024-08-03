@@ -1,8 +1,11 @@
 import requests
+from dotenv import load_dotenv
+import os
 
-# Replace the empty string with your model id below
-model_id = "nwxln67w"
-baseten_api_key = "8XFRY8fC.VGNvc7V9Gt8AdMh88Wx03cStmxNr28N1"
+load_dotenv()
+
+model_id = os.getenv("BASETEN_MODEL_ID")
+baseten_api_key = os.getenv("BASETEN_API_KEY")
 
 messages = [
     {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},

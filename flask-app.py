@@ -5,12 +5,14 @@ import hmac
 import hashlib
 from git import Repo, GitCommandError
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-# Replace with your GitHub webhook secret and personal access token
-GITHUB_SECRET = 'your_secret_here'
-GITHUB_TOKEN = 'your_personal_access_token_here'
+GITHUB_SECRET = os.getenv("GITHUB_SECRET")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def verify_github_signature(request):
     signature = request.headers.get('X-Hub-Signature')
