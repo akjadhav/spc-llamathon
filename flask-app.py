@@ -1,4 +1,4 @@
-# ngrok http 5000
+# ngrok http 5002
 
 from flask import Flask, request, jsonify
 import hmac
@@ -88,4 +88,5 @@ def push_changes_to_pr(repo, file_path, branch_name):
     print(f"Changes pushed to branch {branch_name}")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.secret_key = os.urandom(24)
+    app.run(debug=True, port=5002)

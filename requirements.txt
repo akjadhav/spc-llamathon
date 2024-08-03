@@ -1,0 +1,3 @@
+slimit
+networkx
+matplotlib
