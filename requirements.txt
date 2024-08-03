@@ -1,3 +1,5 @@
 slimit
 networkx
 matplotlib
+requests
+gitpython
