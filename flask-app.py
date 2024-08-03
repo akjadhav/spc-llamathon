@@ -16,7 +16,7 @@ from graph_traversal import create_traversal_list_from_nodes
 load_dotenv()
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+cors = CORS(app)
 
 GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")

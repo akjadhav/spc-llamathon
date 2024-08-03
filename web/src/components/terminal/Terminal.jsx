@@ -16,27 +16,27 @@ const Terminal = ({ jobID }) => {
     `
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(api_endpoint + '/' + jobID + '/logs');
-        var jsonData = await response.json();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(api_endpoint + '/' + jobID + '/logs');
+  //       var jsonData = await response.json();
 
-        var logs = jsonData.response;
+  //       var logs = jsonData.response;
 
-        var setJsonData = logs.split('\n');
+  //       var setJsonData = logs.split('\n');
 
-        // setOutputs(setJsonData);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-    };
+  //       // setOutputs(setJsonData);
+  //     } catch (error) {
+  //       console.error('Failed to fetch data:', error);
+  //     }
+  //   };
 
-    if (jobID !== '') fetchData();
-    const intervalId = setInterval(fetchData, 1000);
+  //   if (jobID !== '') fetchData();
+  //   const intervalId = setInterval(fetchData, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [jobID]);
+  //   return () => clearInterval(intervalId);
+  // }, [jobID]);
 
   return (
     <div

@@ -12,27 +12,19 @@ const History = ({ jobID }) => {
         new HistoryItem('test', './', 'index.js'),
         new HistoryItem('test', './', 'index.js', '', true),
     ])
-
-    console.log('HEHREHEHHHEH')
-
     useEffect(() => {
         const fetchData = async () => {
+            const requestOptions = {
+                method: "GET",
+                redirect: "follow"
+            };
+
             try {
-                console.log('Fetching data...')
-                const response = await fetch('http://bb4f-67-188-146-74.ngrok-free.app/api/update')
-
-                // Check if response is ok before parsing JSON
-                if (!response.ok) {
-                    const errorData = await response.json()
-                    console.error(errorData.error)
-                    return
-                }
-
-                const data = await response.json()
-                console.log(data)
-            } catch (err) {
-                console.error('An error occurred while fetching data.')
-                console.error(err) // Log the error itself instead of response
+                const response = await fetch("http://127.0.0.1:5002/api/update", requestOptions);
+                const result = await response.text();
+                console.log(result);
+            } catch (error) {
+                console.error(error);
             }
         }
 
