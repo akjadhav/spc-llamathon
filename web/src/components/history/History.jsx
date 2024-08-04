@@ -3,15 +3,6 @@ import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
 const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
-  //   const [outputs, setOutputs] = useState([
-  //     new HistoryItem('text', './index.js', 'Git Pull Request dectected', true),
-  //     new HistoryItem('text', './index.js', 'Agent is live...', false),
-  //     new HistoryItem('comment', './index.js'),
-  //     new HistoryItem('comment', './index.js', '', true),
-  //     new HistoryItem('test', './index.js'),
-  //     new HistoryItem('test', './index.js', '', true),
-  //   ])
-
   const [outputKeys, setOutputsKeys] = useState([])
   const [outputKeyToData, setOutputKeyToData] = useState({})
 
@@ -25,7 +16,8 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
         }
         const result = await response.json()
 
-        if (result.data) {
+        if (result.data && result.data instanceof Array) {
+
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,
@@ -33,6 +25,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               item.pathFileName,
               item.timestamp,
               item.description,
+              item.functionName,
               item.inProgress,
               item.failed
             )
@@ -46,11 +39,17 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
                 // check if item is test and is now not in progress but was before, we want to open the file
+                if (item.type === 'test') {
+                  console.log(prevOutputKeyToData[item.key])
+                  console.log(item)
+                }
                 if (
                   item.type === 'test' &&
                   prevOutputKeyToData[item.key].inProgress &&
                   !item.inProgress
                 ) {
+                  // console
+                  console.log('setting file selected path')
                   setFileSelectedPath(item.pathFileName)
                 }
 

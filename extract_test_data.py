@@ -80,7 +80,7 @@ def extract_failed_tests(failed_res, jest_lines):
                     break
                     
             end_index = end_index if end_index != None else len(jest_lines)-1
-            failed_details.extend(range(start_index, end_index))
+            failed_details.extend(range(start_index, end_index+1))
 
     return failed_context, failed_details
 
@@ -106,7 +106,7 @@ def extract_data(test_out, jest_path):
     failed_context, failed_lines = extract_failed_tests(failed_res, jest_lines)
 
     # # { suite : { testName: bool }}, string of failed context, list of (line_start
-    # return test_status_mapping, failed_context, failed_lines
+    return test_status_mapping, failed_context, failed_lines
 
 
 # # file_path = 'sample_data/stderr.txt'

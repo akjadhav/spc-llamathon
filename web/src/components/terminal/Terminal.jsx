@@ -6,22 +6,14 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 SyntaxHighlighter.registerLanguage('javascript', js)
 
 const Terminal = ({ fileSelectedPath }) => {
-  // const [fileContent, setFileContent] = useState(
-  //   `
-  //     //This is the content of the file
-  //     function test() {
-  //       console.log('Hello World');
-  //     }\n
-  //   `,
-  // )
 
   const [file, setFile] = useState(undefined)
-
   const [highlightedLineNumbers, setHighlightedLineNumbers] = useState(new Set())
 
   useEffect(() => {
     const fetchData = async () => {
       if (fileSelectedPath === undefined) return
+      console.log("fetching file: ", fileSelectedPath)
       try {
         const response = await fetch('/api/get-file', {
           method: 'POST',
@@ -141,7 +133,7 @@ describe('multiply function', () => {
   });
 });
               `,
-            failedLines: [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
+          failedLines: [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
           testStatus: { suite1: { func1: false, func2: true } },
         })
       }
@@ -166,11 +158,10 @@ describe('multiply function', () => {
             .map((_, index) => (
               <div
                 key={index}
-                className={`w-2 ${
-                  highlightedLineNumbers !== undefined &&
+                className={`w-2 ${highlightedLineNumbers !== undefined &&
                   highlightedLineNumbers.has(index) &&
                   'bg-red-500'
-                }`}
+                  }`}
                 style={{ height: '1.43em' }}
               />
             ))}

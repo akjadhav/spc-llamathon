@@ -14,6 +14,7 @@ class BotStatus:
         self.status_history = []
 
     def set_status(self, new_status):
+        print("Setting status to: " + new_status)
         try:
             new_status = self.Status(new_status.lower())
             self.status_history.append({
@@ -24,6 +25,7 @@ class BotStatus:
             self.last_updated = datetime.now()
             return True
         except ValueError:
+            print("Invalid status")
             return False
 
     def get_current_status(self):

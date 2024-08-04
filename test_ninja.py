@@ -12,15 +12,6 @@ from extract_test_data import extract_data
 def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
     url = 'http://localhost:5002/receive_data'
 
-    print("Sending data to flask")
-    print("testFileName:", testFileName)
-    print("test_status_mapping:", test_status_mapping)
-    print("failed_lines:", failed_lines)
-    print("--------------------")
-    print("type of testFileName:", type(testFileName))
-    print("type of test_status_mapping:", type(test_status_mapping))
-    print("type of failed_lines:", type(failed_lines))
-
     data = {
         'testFileName': testFileName,
         'testStatusMapping': test_status_mapping,
@@ -32,6 +23,16 @@ def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines
     headers = {'Content-Type': 'application/json'}
 
     response = requests.post(url, data=json_data, headers=headers)
+
+def get_relative_path(absolute_path, base_path):
+    # Ensure both paths are absolute
+    absolute_path = os.path.abspath(absolute_path)
+    base_path = os.path.abspath(base_path)
+
+    # Get the relative path
+    relative_path = os.path.relpath(absolute_path, base_path)
+    
+    return relative_path
 
 def run_test_ninja(repo_path, node_list):    
     test_generator = Test_Generator(repo_path=repo_path)
@@ -76,31 +77,26 @@ def run_test_ninja(repo_path, node_list):
                         capture_output=True, 
                         text=True, 
                         cwd=repo_path)
+                print("LOG: The result of the test run is:", result)
 
-                print("LOG: This is the stderr -------")
-                print(result.stderr)
-                print(result.stdout)
+                print("Running Niall's code")
 
+                # write result.stderr
                 with open("stderr.txt", "w") as f:
                     f.write(result.stderr)
 
                 with open("stdout.txt", "w") as f:
                     f.write(result.stdout)
 
-                # todo: write the contents of main_test_file_path to a test.txt
-                with open("test.txt", "w") as f:
-                    with open(main_test_file_path, "r") as f2:
-                        f.write(f2.read())
-
-                print("Running Niall's code")
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
                     result.stderr, # NAHUM LOOK HERE
                     main_test_file_path
                 )
-            
+
+                        
                 print('About to send data')
-                send_data_to_flask(main_test_file_path, test_status_mapping, failed_lines)
+                send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))

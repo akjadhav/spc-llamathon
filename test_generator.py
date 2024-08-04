@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import pdb
 import utils
 import json
+import requests
 # from extract_test_data import extract_data
 
 load_dotenv()
@@ -19,6 +20,7 @@ class Test_Generator:
         self.model_id = os.getenv("BASETEN_MODEL_ID")
         self.api_key = os.getenv("BASETEN_API_KEY")
         self.repo_path = repo_path
+        self.func_name = None
 
     def _call_baseten_api(self, prompt):
         messages = [
@@ -45,6 +47,18 @@ class Test_Generator:
             output += content.decode("utf-8")
 
         return output
+    
+    def _send_data_to_flask(self, text, inProgress=False):
+        url = 'http://localhost:5002/receive_test_ninja_update'
+
+        data = {
+            'text': text,
+            'inProgress': inProgress,
+        }
+
+        json_data = json.dumps(data)
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json_data, headers=headers)
         
     def generate_test(self, target_function_code, target_file_path, context_functions, previous_test_code=None, error_message=None):
         # Construct the prompt
@@ -57,6 +71,7 @@ class Test_Generator:
         
         for function_info in context_functions:
             function_name, function_code = function_info
+            print("LOG: Context function code: \n", function_code)
             prompt += f"<<FUNCTION {function_name}>> {function_code} <</FUNCTION {function_name}>>\n"
         
         prompt += (
@@ -75,7 +90,8 @@ class Test_Generator:
             prompt += f"\n\nNote: The previous test suite generated the following error. Please revise the test suite to resolve this error:\n{error_message}"
             prompt += f"\n\nHere is the previous test suite that you generated:\n{previous_test_code}"
 
-        
+        self._send_data_to_flask(f"Deploying agent to generate tests for {function_name} in {target_file_path}")
+        self.func_name = function_name
         # Call the Baseten API with retries
         test_code = self._call_baseten_api(prompt)
 
@@ -102,16 +118,23 @@ class Test_Generator:
         print("LOG: Evaluating the test suite and error message with LLM")
         evaluation = self._call_baseten_api(prompt)
 
-        # Parse the evaluation to get a boole
-        # an
+        # Parse the evaluation to get a boolean
         is_test_incorrect = "The test suite is incorrect" in evaluation
         return is_test_incorrect
-            
 
+    def _get_relative_path(absolute_path, base_path):
+        # Ensure both paths are absolute
+        absolute_path = os.path.abspath(absolute_path)
+        base_path = os.path.abspath(base_path)
+
+        # Get the relative path
+        relative_path = os.path.relpath(absolute_path, base_path)
+        
+        return relative_path
+            
     def execute_test(self, test_code, file_path=None):
         # Write the test code to a temporary file to check that it works before we add it to the main test file
         directory = os.path.dirname(file_path)
-        #_trace()
         test_file_path = os.path.join(directory, "temp.test.js")
         with open(test_file_path, "w") as test_file:
             test_file.write(test_code)
@@ -121,6 +144,8 @@ class Test_Generator:
         try:
             with open(self.repo_path + '/package.json', 'r') as f:
                 package_json = json.load(f)
+
+            self._send_data_to_flask(f"Evaluating the generated test suite on {self.func_name}")
 
             if 'jest' not in package_json.get('devDependencies', {}):
                 print("Jest not found in devDependencies. Installing...")
@@ -139,9 +164,6 @@ class Test_Generator:
             print("-------------------")
             print("LOG: Test execution result: ", stderr)
             print(f"{stdout}")
-
-            # extract_data(stdout, self.repo_path + '')
-
 
             print("-------------------")
             # # write stdout and stderr to a file
@@ -212,9 +234,10 @@ class Test_Generator:
             else:
                 if self._is_test_incorrect(test_code, result):
                     previous_test_code = test_code
-                    # TODO: Handle this so that the new prompt includes the previous fuction code and the error message. 
                     error_message = result
-                    print(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
+                    #TODO: Ameya — Make these send to the front-end
+                    self._send_data_to_flask(f"Redeploying agent to generate tests for {self.func_name} in {target_file_info[0]}")
+                    self._send_data_to_flask(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
                 else: 
                     print("LOG: Test is correct, but the function is incorrect. ")
                     # The test is correct, but the function is incorrect

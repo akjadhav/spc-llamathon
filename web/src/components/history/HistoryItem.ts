@@ -1,11 +1,12 @@
-export type ItemType = 'text' | 'comment' | 'test' | 'edit'
+export type ItemType = 'text' | 'comment' | 'generate' | 'test' | 'edit'
 
 export class HistoryItem {
   key: string
   type: ItemType
   pathFileName: string
-  description: string
   timeStamp: string
+  description: string
+  functionName: string
   inProgress: boolean
   failed: boolean
 
@@ -15,6 +16,7 @@ export class HistoryItem {
     pathFileName: string,
     timeStamp: string,
     description: string = '',
+    functionName: string = '',
     inProgress: boolean = false,
     failed: boolean = false
   ) {
@@ -23,24 +25,25 @@ export class HistoryItem {
     this.pathFileName = pathFileName
     this.timeStamp = this.processTimeStamp(timeStamp);
     this.description = description
+    this.functionName = functionName
     this.inProgress = inProgress
     this.failed = failed
   }
 
   private processTimeStamp(timeStamp: string): string {
-    const date = new Date(timeStamp);
-
+    const date = new Date(timeStamp + ' PDT');
     const pad = (num: number) => num.toString().padStart(2, '0');
-
+    
     const month = pad(date.getMonth() + 1);
     const day = pad(date.getDate());
     const year = date.getFullYear();
+    
+    // Use UTC methods to get the correct time
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-    const milliseconds = date.getMilliseconds();
-
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}:${milliseconds} PDT`;
+    
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} PDT`;
   }
 }
 

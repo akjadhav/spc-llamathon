@@ -18,15 +18,15 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
         const response = await fetch('/api/status')
         var jsonData = await response.json()
 
-        const status = jsonData.status
-        setStatus(status)
+        const status = jsonData.data
+        setStatus(status.toUpperCase())
       } catch (error) {
         // console.error('Failed to fetch data:', error);
       }
     }
 
     fetchAgentStatus()
-    const intervalId = setInterval(fetchAgentStatus, 1500)
+    const intervalId = setInterval(fetchAgentStatus, 2000)
 
     return () => clearInterval(intervalId)
   }, [])
