@@ -19,7 +19,6 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
         var jsonData = await response.json()
 
         const status = jsonData.data
-        console.log(status)
         setStatus(status.toUpperCase())
       } catch (error) {
         // console.error('Failed to fetch data:', error);

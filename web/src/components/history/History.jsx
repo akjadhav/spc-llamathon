@@ -3,15 +3,6 @@ import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
 const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
-  //   const [outputs, setOutputs] = useState([
-  //     new HistoryItem('text', './index.js', 'Git Pull Request dectected', true),
-  //     new HistoryItem('text', './index.js', 'Agent is live...', false),
-  //     new HistoryItem('comment', './index.js'),
-  //     new HistoryItem('comment', './index.js', '', true),
-  //     new HistoryItem('test', './index.js'),
-  //     new HistoryItem('test', './index.js', '', true),
-  //   ])
-
   const [outputKeys, setOutputsKeys] = useState([])
   const [outputKeyToData, setOutputKeyToData] = useState({})
 
@@ -51,6 +42,8 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
                   prevOutputKeyToData[item.key].inProgress &&
                   !item.inProgress
                 ) {
+                  // console
+                  console.log('setting file selected path')
                   setFileSelectedPath(item.pathFileName)
                 }
 
