@@ -2,21 +2,22 @@ import React, { useState, useEffect, CSSProperties } from 'react'
 import { MdOutlineDone, MdEdit, MdOutlineClose } from 'react-icons/md'
 
 const ListItem = ({ testName, passed }) => (
-    <li className="flex items-center space-x-2 justify-between">
-        <div className={`text-sm truncates ${passed ? "text-green-400" : "text-red-400"}`}>
+    <li className="flex items-center space-x-2 justify-between border-b-1 border-gray-600">
+        <div className={`text-sm truncates line-clamp-2 flex-grow ${passed ? "text-green-400" : "text-red-400"}`}>
             {testName}
         </div>
 
         {
-            passed ? <MdOutlineDone size={20} className='text-green-400' />
-                : <MdOutlineClose size={20} className='text-red-400' />
+            passed ? <MdOutlineDone size={20} className='text-green-400 flex-shrink-0' />
+                : <MdOutlineClose size={20} className='text-red-400 flex-shrink-0' />
         }
     </li>
+
 );
 
 const TestDisplay = ({ testStatus }) => {
     return (
-        <div className="absolute w-1/5 top-0 right-0 bg-gray-800 bg-opacity-80 p-2 rounded-lg shadow-lg mt-2 mr-2 custom-height  flex flex-col"
+        <div className="absolute w-1/5 top-0 right-0 bg-gray-800 bg-opacity-80 p-2 rounded-lg shadow-lg mt-2 mr-2 custom-height flex flex-col"
             style={{ 'overflow-y': 'auto', height: '700px' }}>
             <span className="mb-2">
                 Test Results

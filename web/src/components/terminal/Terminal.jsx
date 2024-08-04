@@ -153,7 +153,8 @@ describe('multiply function', () => {
   }, [file])
 
   return (
-    <div className='relative h-full'>
+    <div className='relative custom-height'
+      style={{ 'overflow-y': 'auto', height: '700px' }}>
       {loading && (
         <div className='absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-10'>
           <ClipLoader color="white" />
