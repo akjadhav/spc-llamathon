@@ -81,13 +81,6 @@ def run_test_ninja(repo_path, node_list):
 
                 print("Running Niall's code")
 
-                # write result.stderr
-                with open(repo_path + "/logs/stderr.txt", "w") as f:
-                    f.write(result.stderr)
-
-                with open(repo_path + "/logs/stdout.txt", "w") as f:
-                    f.write(result.stdout)
-
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
                     result.stderr, # NAHUM LOOK HERE
@@ -97,6 +90,14 @@ def run_test_ninja(repo_path, node_list):
                         
                 print('About to send data')
                 send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
+
+                # write result.stderr
+                with open(repo_path + "/logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stderr.txt"), "w") as f:
+                    f.write(result.stderr)
+
+                with open(repo_path + "/logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stdout.txt"), "w") as f:
+                    f.write(result.stdout)
+
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))
