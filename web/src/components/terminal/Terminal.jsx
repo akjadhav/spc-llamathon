@@ -3,16 +3,20 @@ import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import TestDisplay from './TestDisplay'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 SyntaxHighlighter.registerLanguage('javascript', js)
 
 const Terminal = ({ fileSelectedPath }) => {
   const [file, setFile] = useState(undefined)
+  const [loading, setLoading] = useState(false)
   const [highlightedLineNumbers, setHighlightedLineNumbers] = useState(new Set())
 
   useEffect(() => {
     const fetchData = async () => {
       if (fileSelectedPath === undefined) return
+
+      setLoading(true)
       console.log("fetching file: ", fileSelectedPath)
       try {
         const response = await fetch('/api/get-file', {
@@ -30,8 +34,10 @@ const Terminal = ({ fileSelectedPath }) => {
         const data = await response.json()
         console.log(data)
         // Handle the file content here
+        setLoading(false)
         setFile(data)
       } catch (error) {
+        setLoading(false)
         console.error('Error:', error)
         // Handle the error here
 
@@ -148,6 +154,11 @@ describe('multiply function', () => {
 
   return (
     <div className='relative h-full'>
+      {loading && (
+        <div className='absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-10'>
+          <ClipLoader color="white" />
+        </div>
+      )}
       <div
         id='mock-terminal'
         className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
@@ -181,7 +192,7 @@ describe('multiply function', () => {
           </SyntaxHighlighter>
         </div>
       </div>
-      {file &&
+      {file && Object.keys(file.testStatus).length > 0 &&
         <TestDisplay testStatus={file.testStatus} />
       }
 
