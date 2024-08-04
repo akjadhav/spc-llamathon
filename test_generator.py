@@ -160,11 +160,10 @@ class Test_Generator:
             print(f"{stdout}")
 
             print("-------------------")
-            # # write stdout and stderr to a file
-            # with open("stdout.txt", "w") as file:
-            #     file.write(stdout)
-            # with open("stderr.txt", "w") as file:
-            #     file.write(stderr)
+
+            # todo: delete temp.test.js
+            os.remove(test_file_path)
+
             
             if result.returncode != 0:
                 raise Exception(stderr)
