@@ -6,7 +6,7 @@ import pdb
 from graph_node import GraphNode
 
 def run_test_ninja(repo_path, node_list):
-    test_generator = Test_Generator()
+    test_generator = Test_Generator(repo_path=repo_path)
 
     print((node.file_path, (node.func_name, node.line_start, node.line_end)) for node in node_list)
     print("--------------------")
@@ -14,7 +14,7 @@ def run_test_ninja(repo_path, node_list):
 
         context_functions = []
         for node in node_list:
-            target_file_info = (os.path.join(repo_path, node.file_path), (node.func_name, node.line_start, node.line_end))
+            target_file_info = (node.file_path, (node.func_name, node.line_start, node.line_end))
             test_code = test_generator.generate_and_test(target_file_info, context_functions)
             print("Generated test code:\n", test_code)
             # Add the current node's information to the context for the next function
