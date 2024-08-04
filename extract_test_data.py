@@ -10,6 +10,7 @@ def retrieve_jest_test_file(file_path):
     # Reading the file and storing its contents in a variable.
     with open(jest_path, 'r') as file:
         jest_text = file.read()
+    print(jest_text)
     jest_lines = jest_text.split('\n')
     return jest_lines
 
@@ -86,7 +87,9 @@ def extract_failed_tests(failed_res, jest_lines):
 # def run(file_path, jest_path):
 def extract_data(test_out, jest_path):
     # sample_text = retrieve_output_text(file_path)
-    # return 1, 3, 4
+    jest_lines = retrieve_jest_test_file(jest_path)
+
+    print(test_out)
 
     # Regular expression to recognize the start of a block and the end of the block
     block_pattern = re.compile(r'(  .+?)(?:\n\s*\n)', re.DOTALL)
@@ -100,7 +103,6 @@ def extract_data(test_out, jest_path):
     failed_res = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if not sub_v} for k, v in test_status_mapping.items()}
     failed_res = {k: v for k, v in failed_res.items() if v} # remove {} from values
 
-    jest_lines = retrieve_jest_test_file(jest_path)
     failed_context, failed_lines = extract_failed_tests(failed_res, jest_lines)
 
     # { suite : { testName: bool }}, string of failed context, list of (line_start

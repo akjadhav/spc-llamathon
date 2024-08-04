@@ -2,7 +2,7 @@ import React, { useState, useEffect, use } from 'react'
 import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
-const History = ({ jobID, files, setFiles }) => {
+const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
   //   const [outputs, setOutputs] = useState([
   //     new HistoryItem('text', './index.js', 'Git Pull Request dectected', true),
   //     new HistoryItem('text', './index.js', 'Agent is live...', false),
@@ -44,6 +44,11 @@ const History = ({ jobID, files, setFiles }) => {
 
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
+                // check if item is test and is now not in progress but was before, we want to open the file
+                if (item.type === 'test' && prevOutputKeyToData[item.key].inProgress && !item.inProgress) {
+                  setFileSelectedPath(item.pathFileName)
+                }
+
                 // Update only the inProgress field for existing items
                 updatedOutputKeyToData[item.key] = {
                   ...prevOutputKeyToData[item.key],
