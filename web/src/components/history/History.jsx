@@ -26,7 +26,6 @@ const History = ({ jobID, files, setFiles }) => {
         const result = await response.json()
 
         if (result.data) {
-          // console.log(result.data)
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,

@@ -90,7 +90,8 @@ def get_file_from_request():
         data = {
             'type': 'test',
             'data': "var x = 5;",
-            'testStatus': {'test1': False}
+            'linesFailed': [1,2,3,6,7,8],
+            'testStatus': { 'suite1': {'func1': False, 'func2': True }}
         }
         
         response = jsonify(data)
