@@ -31,18 +31,18 @@ export class HistoryItem {
   }
 
   private processTimeStamp(timeStamp: string): string {
-    const date = new Date(timeStamp);
-
+    const date = new Date(timeStamp + ' PDT');
     const pad = (num: number) => num.toString().padStart(2, '0');
-
+    
     const month = pad(date.getMonth() + 1);
     const day = pad(date.getDate());
     const year = date.getFullYear();
+    
+    // Use UTC methods to get the correct time
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-    // const milliseconds = date.getMilliseconds();
-
+    
     return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} PDT`;
   }
 }
