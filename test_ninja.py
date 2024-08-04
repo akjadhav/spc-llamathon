@@ -33,6 +33,16 @@ def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines
 
     response = requests.post(url, data=json_data, headers=headers)
 
+def get_relative_path(absolute_path, base_path):
+    # Ensure both paths are absolute
+    absolute_path = os.path.abspath(absolute_path)
+    base_path = os.path.abspath(base_path)
+
+    # Get the relative path
+    relative_path = os.path.relpath(absolute_path, base_path)
+    
+    return relative_path
+
 def run_test_ninja(repo_path, node_list):    
     test_generator = Test_Generator(repo_path=repo_path)
     
@@ -84,6 +94,8 @@ def run_test_ninja(repo_path, node_list):
                     result.stderr, # NAHUM LOOK HERE
                     main_test_file_path
                 )
+
+                get_relative_path(main_test_file_path, repo_path)
             
                 print('About to send data')
                 send_data_to_flask(main_test_file_path, test_status_mapping, failed_lines)
