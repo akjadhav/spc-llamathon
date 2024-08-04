@@ -46,18 +46,23 @@ const History = ({ jobID }) => {
 
           console.log(newOutputs)
 
-          for (const item of newOutputs) {
-            if (outputKeyToData[item.key] === undefined) {
-              setOutputsKeys((prevOutputKeys) => [...prevOutputKeys, item.key])
+          setOutputKeyToData((prevOutputKeyToData) => {
+            const updatedOutputKeyToData = { ...prevOutputKeyToData }
+            let newKeysAdded = false
+
+            for (const item of newOutputs) {
+              if (!(item.key in prevOutputKeyToData)) {
+                updatedOutputKeyToData[item.key] = item
+                newKeysAdded = true
+              }
             }
 
-            setOutputKeyToData((prevOutputKeyToData) => {
-              return {
-                ...prevOutputKeyToData,
-                [item.key]: item,
-              }
-            })
-          }
+            if (newKeysAdded) {
+              setOutputsKeys(Object.keys(updatedOutputKeyToData))
+            }
+
+            return updatedOutputKeyToData
+          })
         }
       } catch (error) {
         console.error('Fetch error:', error)
