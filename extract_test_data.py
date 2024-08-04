@@ -86,6 +86,7 @@ def extract_failed_tests(failed_res, jest_lines):
 # def run(file_path, jest_path):
 def extract_data(test_out, jest_path):
     # sample_text = retrieve_output_text(file_path)
+    # return 1, 3, 4
 
     # Regular expression to recognize the start of a block and the end of the block
     block_pattern = re.compile(r'(  .+?)(?:\n\s*\n)', re.DOTALL)
