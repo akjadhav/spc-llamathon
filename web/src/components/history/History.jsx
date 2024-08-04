@@ -12,15 +12,17 @@ const History = ({ jobID }) => {
   //     new HistoryItem('test', './index.js', '', true),
   //   ])
 
-  const [outputKeys, setOutputsKeys] = useState(['Agent is live...'])
+  const [outputKeys, setOutputsKeys] = useState([
+    // 'Agent is live...'
+  ])
   const [outputKeyToData, setOutputKeyToData] = useState({
-    'Agent is live...': new HistoryItem(
-      'Agent is live...',
-      'text',
-      './index.js',
-      'Agent is live...',
-      false,
-    ),
+    // 'Agent is live...': new HistoryItem(
+    //   'Agent is live...',
+    //   'text',
+    //   './index.js',
+    //   'Agent is live...',
+    //   false,
+    // ),
   })
 
   useEffect(() => {
@@ -44,15 +46,20 @@ const History = ({ jobID }) => {
             )
           })
 
-          console.log(newOutputs)
-
           setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
             let newKeysAdded = false
 
             for (const item of newOutputs) {
-               updatedOutputKeyToData[item.key] = item
-              if (!(item.key in prevOutputKeyToData)) {
+              if (item.key in prevOutputKeyToData) {
+                // Update only the inProgress field for existing items
+                updatedOutputKeyToData[item.key] = {
+                  ...prevOutputKeyToData[item.key],
+                  inProgress: item.inProgress,
+                }
+              } else {
+                // Add new item
+                updatedOutputKeyToData[item.key] = item
                 newKeysAdded = true
               }
             }
@@ -71,7 +78,7 @@ const History = ({ jobID }) => {
 
     fetchData()
 
-    const intervalId = setInterval(fetchData, 1000)
+    const intervalId = setInterval(fetchData, 5000)
 
     return () => clearInterval(intervalId)
   }, [])
