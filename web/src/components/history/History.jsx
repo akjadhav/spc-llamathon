@@ -51,8 +51,8 @@ const History = ({ jobID }) => {
             let newKeysAdded = false
 
             for (const item of newOutputs) {
+               updatedOutputKeyToData[item.key] = item
               if (!(item.key in prevOutputKeyToData)) {
-                updatedOutputKeyToData[item.key] = item
                 newKeysAdded = true
               }
             }

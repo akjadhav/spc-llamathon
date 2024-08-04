@@ -61,11 +61,13 @@ const HistoryRow = ({ item }) => {
           </div>
           :
           <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
-            <div className='flex items-center py-1'>
-              {item.description}
+            <div className='flex-grow overflow-hidden'>
+              <div className='py-1 line-clamp-2'>
+                {item.description}
+              </div>
             </div>
 
-            <div className={`ml-auto opacity-75 pr-1 ${loading && 'mt-1'}`}>
+            <div className={`ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
               {loading ? (
                 <PulseLoader
                   color={color}
@@ -75,9 +77,9 @@ const HistoryRow = ({ item }) => {
                   aria-label="Loading Spinner"
                   data-testid="loader"
                 />
-              ) :
-                <MdOutlineDone size={20} className="text-green-200"/>
-              }
+              ) : (
+                <MdOutlineDone size={20} className="text-green-200" />
+              )}
             </div>
           </div>
       }
