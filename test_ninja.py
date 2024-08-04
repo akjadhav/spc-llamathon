@@ -83,12 +83,15 @@ def run_test_ninja(repo_path, node_list):
 
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
-                    result.stderr, # NAHUM LOOK HERE
+                    result.stderr,
                     main_test_file_path
                 )
 
+                print('====================')
+                print("Test Status Mapping:", test_status_mapping)
+                print("Failed Lines:", failed_lines)
                         
-                print('About to send data')
+                print('About to send data from ninja to flask')
                 send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
 
                 # Create the directory if it doesn't exist

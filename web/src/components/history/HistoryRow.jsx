@@ -28,20 +28,28 @@ const HistoryRow = ({ item }) => {
         <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
           <div>
             <div className='flex overflow-hidden items-center space-x-2'>
-              <div className={item.type === 'comment' || item.type === 'generate' ? 'text-teal-600' : 'text-blue-500'}>
-                {item.type === 'comment' || item.type === 'generate' && <FaAlignLeft />}
+              <div
+                className={
+                  item.type === 'comment' || item.type === 'generate'
+                    ? 'text-teal-600'
+                    : 'text-blue-500'
+                }
+              >
+                {item.type === 'comment' || (item.type === 'generate' && <FaAlignLeft />)}
                 {item.type === 'test' && <SiSpeedtest />}
                 {item.type === 'edit' && <MdEdit />}
               </div>
 
               {item.type === 'test' && (
-                <div className='py-1 truncates'>Generating and testing {item.pathFileName}</div>
+                <div className='py-1 truncates'>Created {item.pathFileName}</div>
               )}
               {item.type === 'comment' && (
                 <div className='py-1 truncates'>Commenting {item.pathFileName}</div>
               )}
               {item.type === 'generate' && (
-                <div className='py-1 truncates'>Generating tests for {item.functionName} in {item.pathFileName}</div>
+                <div className='py-1 truncates'>
+                  Generating function node for {item.functionName} in {item.pathFileName}
+                </div>
               )}
               {item.type === 'edit' && (
                 <div className='py-1 truncates'>{item.pathFileName} edited in PR</div>
@@ -63,10 +71,11 @@ const HistoryRow = ({ item }) => {
               />
             ) : (
               <>
-                {
-                  item.failed ? <MdOutlineClose size={20} className='text-red-200' />
-                    : <MdOutlineDone size={20} className='text-green-200' />
-                }
+                {item.failed ? (
+                  <MdOutlineClose size={20} className='text-red-200' />
+                ) : (
+                  <MdOutlineDone size={20} className='text-green-200' />
+                )}
               </>
             )}
             {/* <FadeLoader
@@ -83,7 +92,11 @@ const HistoryRow = ({ item }) => {
       ) : (
         <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
           <div className='flex-grow overflow-hidden'>
-            <div className={`py-1 truncates ${item.key === "running_test_ninja_update" && "text-orange-400"}`}>
+            <div
+              className={`py-1 truncates ${
+                item.key === 'running_test_ninja_update' && 'text-orange-400'
+              }`}
+            >
               {item.description}
             </div>
             <span className='text-xs text-gray-500'>{item.timeStamp}</span>
@@ -101,10 +114,11 @@ const HistoryRow = ({ item }) => {
               />
             ) : (
               <>
-                {
-                  item.failed ? <MdOutlineClose size={20} className='text-red-200' />
-                    : <MdOutlineDone size={20} className='text-green-200' />
-                }
+                {item.failed ? (
+                  <MdOutlineClose size={20} className='text-red-200' />
+                ) : (
+                  <MdOutlineDone size={20} className='text-green-200' />
+                )}
               </>
             )}
           </div>
