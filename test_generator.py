@@ -118,6 +118,7 @@ class Test_Generator:
 
             if 'jest' not in package_json.get('devDependencies', {}):
                 print("Jest not found in devDependencies. Installing...")
+                # could use jest --outputFile=<filename> here
                 subprocess.run(['npm', 'install', '--save-dev', 'jest'], check=True)
 
             result = subprocess.run(['npm', 'test', '--', test_file_path], capture_output=True, text=True)

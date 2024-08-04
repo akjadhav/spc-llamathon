@@ -27,7 +27,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 # Global data list to store updates
 data = []
 
-repo_path = '/tmp/repo'
+repo_path = '/tmp/akjadhav/spc-llamathon-example'
 
 bot = BotStatus()
 
