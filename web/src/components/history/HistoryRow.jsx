@@ -1,65 +1,65 @@
-import React, { useState, useEffect, CSSProperties } from "react";
-import ClockLoader from "react-spinners/ClockLoader";
-import PulseLoader from "react-spinners/PulseLoader";
-import FadeLoader from "react-spinners/FadeLoader";
-import { HistoryItem } from './HistoryItem';
-import { FaAlignLeft } from "react-icons/fa";
-import { SiSpeedtest } from "react-icons/si";
-import { MdOutlineDone } from "react-icons/md";
+import React, { useState, useEffect, CSSProperties } from 'react'
+import ClockLoader from 'react-spinners/ClockLoader'
+import PulseLoader from 'react-spinners/PulseLoader'
+import FadeLoader from 'react-spinners/FadeLoader'
+import { HistoryItem } from './HistoryItem'
+import { FaAlignLeft } from 'react-icons/fa'
+import { SiSpeedtest } from 'react-icons/si'
+import { MdOutlineDone } from 'react-icons/md'
 
 const override = {
-  display: "block",
-  margin: "0 auto",
-  borderColor: "white",
-};
+  display: 'block',
+  margin: '0 auto',
+  borderColor: 'white',
+}
 
 const HistoryRow = ({ item }) => {
-  let [loading, setLoading] = useState(false);
-  let [color, setColor] = useState("#FDFCDC");
+  let [loading, setLoading] = useState(false)
+  let [color, setColor] = useState('#FDFCDC')
 
   // Use useEffect to update loading state when item.loading changes
   useEffect(() => {
-    setLoading(item.inProgress);
-  }, [item.inProgress]);
+    setLoading(item.inProgress)
+  }, [item.inProgress])
 
   return (
     <>
-      {
-        ["test", "comment"].includes(item.type) ?
-          <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
-
-            <div>
-              <div className='flex overflow-hidden items-center space-x-2'>
-                <div className={item.type === "comment" ? "text-teal-600" : "text-blue-500"}>
-                  {item.type === 'comment' ? <FaAlignLeft /> : <SiSpeedtest />}
-                </div>
-
-                <div className='py-1 truncates'>
-                  {/* line-clamp-2'> */}
-                  {item.pathFileName}
-                </div>
+      {['test', 'comment'].includes(item.type) ? (
+        <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
+          <div>
+            <div className='flex overflow-hidden items-center space-x-2'>
+              <div className={item.type === 'comment' ? 'text-teal-600' : 'text-blue-500'}>
+                {item.type === 'comment' ? <FaAlignLeft /> : <SiSpeedtest />}
               </div>
 
-              <span className="text-xs text-gray-500">
-                {item.timeStamp}
-              </span>
+              {item.type === 'test' && (
+                <div className='py-1 truncates'>Generating and testing {item.pathFileName}</div>
+              )}
+              {item.type === 'comment' && (
+                <div className='py-1 truncates'>Commenting {item.pathFileName}</div>
+              )}
+              {item.type === 'edit' && (
+                <div className='py-1 truncates'>{item.pathFileName} edited in PR</div>
+              )}
             </div>
 
+            <span className='text-xs text-gray-500'>{item.timeStamp}</span>
+          </div>
 
-            <div className={`ml-auto ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
-              {loading ? (
-                <ClockLoader
-                  color={color}
-                  loading={loading}
-                  cssOverride={override}
-                  size={20}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              ) : (
-                <MdOutlineDone size={20} className="text-green-200" />
-              )}
-              {/* <FadeLoader
+          <div className={`ml-auto ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
+            {loading ? (
+              <ClockLoader
+                color={color}
+                loading={loading}
+                cssOverride={override}
+                size={20}
+                aria-label='Loading Spinner'
+                data-testid='loader'
+              />
+            ) : (
+              <MdOutlineDone size={20} className='text-green-200' />
+            )}
+            {/* <FadeLoader
                 color={color}
                 loading={loading}
                 width={5}
@@ -68,36 +68,34 @@ const HistoryRow = ({ item }) => {
                 aria-label="Loading Spinner"
                 data-testid="loader"
               /> */}
-            </div>
           </div>
-          :
-          <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
-            <div className='flex-grow overflow-hidden'>
-              <div className='py-1 truncates'>
-                {/* line-clamp-2'> */}
-                {item.description}
-              </div>
-              <span className="text-xs text-gray-500">
-                {item.timeStamp}
-              </span>
+        </div>
+      ) : (
+        <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
+          <div className='flex-grow overflow-hidden'>
+            <div className='py-1 truncates'>
+              {/* line-clamp-2'> */}
+              {item.description}
             </div>
+            <span className='text-xs text-gray-500'>{item.timeStamp}</span>
+          </div>
 
-            <div className={`ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
-              {loading ? (
-                <PulseLoader
-                  color={color}
-                  loading={loading}
-                  cssOverride={override}
-                  size={4}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              ) : (
-                <MdOutlineDone size={20} className="text-green-200" />
-              )}
-            </div>
+          <div className={`ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
+            {loading ? (
+              <PulseLoader
+                color={color}
+                loading={loading}
+                cssOverride={override}
+                size={4}
+                aria-label='Loading Spinner'
+                data-testid='loader'
+              />
+            ) : (
+              <MdOutlineDone size={20} className='text-green-200' />
+            )}
           </div>
-      }
+        </div>
+      )}
     </>
   )
 }
