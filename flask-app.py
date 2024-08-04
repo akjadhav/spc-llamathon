@@ -73,7 +73,7 @@ def receive_test_ninja_update():
         abort(400, description="No data received")
 
     if data:
-        add_test_file_update(data['testFileName'], "Test generated for " + data['testFileName'], inProgress=False)
+        add_text_update(data['text'], inProgress=data['inProgress'])
 
     return jsonify({"message": "Data received", "data": data}), 200
 
@@ -178,7 +178,7 @@ def add_test_file_update(pathFileName, text, inProgress=False, key=None):
         'timestamp': current_time
     })
 
-def add_comment_file_update(pathFileName, text, inProgress=False, key=None):
+def add_comment_update(pathFileName, text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
@@ -189,6 +189,22 @@ def add_comment_file_update(pathFileName, text, inProgress=False, key=None):
         'type': 'comment',
         'pathFileName': pathFileName,
         'description': text,
+        'inProgress': inProgress,
+        'timestamp': current_time
+    })
+
+def add_comment_file_update(pathFileName, text, node, inProgress=False, key=None):
+    current_time = datetime.now()
+    
+    global data
+    # data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    
+    data.append({
+        'key': key if key else text,
+        'type': 'generate',
+        'pathFileName': pathFileName,
+        'description': text,
+        'functionName': node,
         'inProgress': inProgress,
         'timestamp': current_time
     })
@@ -421,7 +437,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
                 print(parsed_diff)
                 for node in parsed_diff:
-                    add_comment_file_update(file, f"Generated function node from changed code: {node}", inProgress=False)
+                    add_comment_file_update(file, f"Generated function node from changed code: {node}", node, inProgress=False)
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 

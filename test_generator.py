@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import pdb
 import utils
 import json
+import requests
 # from extract_test_data import extract_data
 
 load_dotenv()
@@ -46,6 +47,18 @@ class Test_Generator:
             output += content.decode("utf-8")
 
         return output
+    
+    def _send_data_to_flask(self, text, inProgress=False):
+        url = 'http://localhost:5002/receive_test_ninja_update'
+
+        data = {
+            'text': text,
+            'inProgress': inProgress,
+        }
+
+        json_data = json.dumps(data)
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json_data, headers=headers)
         
     def generate_test(self, target_function_code, target_file_path, context_functions, previous_test_code=None, error_message=None):
         # Construct the prompt
@@ -77,8 +90,7 @@ class Test_Generator:
             prompt += f"\n\nNote: The previous test suite generated the following error. Please revise the test suite to resolve this error:\n{error_message}"
             prompt += f"\n\nHere is the previous test suite that you generated:\n{previous_test_code}"
 
-        #TODO: Ameya — Make these send to the front-end
-        print(f"Deploying agent to generate tests for {function_name} in {target_file_path}")
+        self._send_data_to_flask(f"Deploying agent to generate tests for {function_name} in {target_file_path}")
         self.func_name = function_name
         # Call the Baseten API with retries
         test_code = self._call_baseten_api(prompt)
@@ -133,8 +145,7 @@ class Test_Generator:
             with open(self.repo_path + '/package.json', 'r') as f:
                 package_json = json.load(f)
 
-            #TODO: Ameya — Make these send to the front-end
-            print(f"Evaluating the generated test suite on {self.func_name}")
+            self._send_data_to_flask(f"Evaluating the generated test suite on {self.func_name}")
 
             if 'jest' not in package_json.get('devDependencies', {}):
                 print("Jest not found in devDependencies. Installing...")
@@ -225,8 +236,8 @@ class Test_Generator:
                     previous_test_code = test_code
                     error_message = result
                     #TODO: Ameya — Make these send to the front-end
-                    print(f"Redeploying agent to generate tests for {self.func_name} in {target_file_info[0]}")
-                    print(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
+                    self._send_data_to_flask(f"Redeploying agent to generate tests for {self.func_name} in {target_file_info[0]}")
+                    self._send_data_to_flask(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
                 else: 
                     print("LOG: Test is correct, but the function is incorrect. ")
                     # The test is correct, but the function is incorrect
