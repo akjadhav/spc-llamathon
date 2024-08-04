@@ -382,9 +382,9 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         print(node_list)
         print("===================================")
 
-        add_text_update(f"Running TestNinja", inProgress=True)
+        add_text_update(f"Running TestNinja", inProgress=True, key='running_test_ninja_update')
         run_test_ninja(repo_path, node_list)
-        add_text_update(f"Running TestNinja", inProgress=False)
+        add_text_update(f"Running TestNinja", inProgress=False, key='running_test_ninja_update')
 
         end_process(repo_path)
     except (GitCommandError, Exception) as e:

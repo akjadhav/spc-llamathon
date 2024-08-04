@@ -5,7 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader'
 import { HistoryItem } from './HistoryItem'
 import { FaAlignLeft } from 'react-icons/fa'
 import { SiSpeedtest } from 'react-icons/si'
-import { MdOutlineDone, MdEdit } from 'react-icons/md'
+import { MdOutlineDone, MdEdit, MdOutlineClose } from 'react-icons/md'
 
 const override = {
   display: 'block',
@@ -59,7 +59,12 @@ const HistoryRow = ({ item }) => {
                 data-testid='loader'
               />
             ) : (
-              <MdOutlineDone size={20} className='text-green-200' />
+              <>
+                {
+                  item.failed ? <MdOutlineClose size={20} className='text-red-200' />
+                    : <MdOutlineDone size={20} className='text-green-200' />
+                }
+              </>
             )}
             {/* <FadeLoader
                 color={color}
@@ -75,8 +80,7 @@ const HistoryRow = ({ item }) => {
       ) : (
         <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
           <div className='flex-grow overflow-hidden'>
-            <div className='py-1 truncates'>
-              {/* line-clamp-2'> */}
+            <div className={`py-1 truncates ${item.key === "running_test_ninja_update" && "text-orange-400"}`}>
               {item.description}
             </div>
             <span className='text-xs text-gray-500'>{item.timeStamp}</span>
@@ -93,7 +97,12 @@ const HistoryRow = ({ item }) => {
                 data-testid='loader'
               />
             ) : (
-              <MdOutlineDone size={20} className='text-green-200' />
+              <>
+                {
+                  item.failed ? <MdOutlineClose size={20} className='text-red-200' />
+                    : <MdOutlineDone size={20} className='text-green-200' />
+                }
+              </>
             )}
           </div>
         </div>

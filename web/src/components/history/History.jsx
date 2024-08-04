@@ -34,6 +34,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               item.timestamp,
               item.description,
               item.inProgress,
+              item.failed
             )
           })
 

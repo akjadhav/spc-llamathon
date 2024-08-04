@@ -7,6 +7,7 @@ export class HistoryItem {
   description: string
   timeStamp: string
   inProgress: boolean
+  failed: boolean
 
   constructor(
     key: string,
@@ -15,6 +16,7 @@ export class HistoryItem {
     timeStamp: string,
     description: string = '',
     inProgress: boolean = false,
+    failed: boolean = false
   ) {
     this.key = key
     this.type = type
@@ -22,6 +24,7 @@ export class HistoryItem {
     this.timeStamp = this.processTimeStamp(timeStamp);
     this.description = description
     this.inProgress = inProgress
+    this.failed = failed
   }
 
   private processTimeStamp(timeStamp: string): string {
