@@ -24,7 +24,7 @@ const HistoryRow = ({ item }) => {
 
   return (
     <>
-      {['test', 'comment'].includes(item.type) ? (
+      {['test', 'comment', 'edit'].includes(item.type) ? (
         <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
           <div>
             <div className='flex overflow-hidden items-center space-x-2'>
