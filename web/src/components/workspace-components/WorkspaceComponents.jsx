@@ -10,7 +10,7 @@ import { FaRobot, FaUser } from 'react-icons/fa'
 import { Pill } from '@thumbtack/thumbprint-react'
 
 const WorkspaceComponent = ({ jobID }) => {
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     const fetchAgentStatus = async () => {
@@ -50,7 +50,7 @@ const WorkspaceComponent = ({ jobID }) => {
         </Tab>
       </TabList>
       <div>
-        <div className='border-b border-neutral-600 flex gap-2 items-center px-4 py-2 text-md'>
+        <div className='border-b w-full border-neutral-600 flex gap-2 justify-end items-center px-2 py-2 text-md'>
           <VscSparkleFilled />
           {/* Chat */}
           {status === 'RUNNING' && (
@@ -75,11 +75,12 @@ const WorkspaceComponent = ({ jobID }) => {
           )}
         </div>
       </div>
+
       <TabPanel>
         <History jobID={jobID} />
       </TabPanel>
       <TabPanel>
-        <Files jobID={jobID} />
+        <Files jobID={jobID} fileSelectedPath={fileSelectedPath} setFileSelectedPath={setFileSelectedPath} />
       </TabPanel>
     </Tabs>
   )

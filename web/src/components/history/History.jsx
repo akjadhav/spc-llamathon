@@ -13,16 +13,17 @@ const History = ({ jobID }) => {
   //   ])
 
   const [outputKeys, setOutputsKeys] = useState([
-    // 'Agent is live...'
+    'Test event'
   ])
   const [outputKeyToData, setOutputKeyToData] = useState({
-    // 'Agent is live...': new HistoryItem(
-    //   'Agent is live...',
-    //   'text',
-    //   './index.js',
-    //   'Agent is live...',
-    //   false,
-    // ),
+    'Test event': new HistoryItem(
+      'Test event',
+      'text',
+      './index.js',
+      'Test event',
+      "time",
+      false,
+    ),
   })
 
   useEffect(() => {
@@ -36,6 +37,7 @@ const History = ({ jobID }) => {
         const result = await response.json()
 
         if (result.data) {
+          // console.log(result.data)
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,

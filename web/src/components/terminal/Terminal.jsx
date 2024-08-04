@@ -5,7 +5,7 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 SyntaxHighlighter.registerLanguage('javascript', js)
 
-const Terminal = ({ jobID }) => {
+const Terminal = ({ jobID, fileSelectedPath }) => {
   const [fileContent, setFileContent] = useState(
     `
       //This is the content of the file
@@ -38,6 +38,35 @@ const Terminal = ({ jobID }) => {
 
   //   return () => clearInterval(intervalId);
   // }, [jobID]);
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      if (fileSelectedPath === undefined) return
+      try {
+        const response = await fetch('/api/fetch-file', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fileSelectedPath }),
+        });
+    
+        if (!response.ok) {
+          throw new Error('Failed to fetch file');
+        }
+    
+        const data = await response.json();
+        console.log(data);
+        // Handle the file content here
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle the error here
+      }
+    }
+    
+    fetchData()
+  }, [fileSelectedPath])
 
   return (
     <div
