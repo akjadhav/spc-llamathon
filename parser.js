@@ -133,7 +133,7 @@ try {
     // const paths = getJavaScriptFiles(args[0]);
     const graph = buildDependencyGraph(paths);
 
-    // console.log(JSON.stringify(graph, null, 2));
+    console.log(JSON.stringify(graph, null, 2));
   } catch (err) {
     console.error('Error reading file:', err);
   }
