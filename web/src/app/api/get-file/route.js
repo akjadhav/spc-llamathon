@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { api_endpoint } from '../../../api_endpoint';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -9,7 +10,7 @@ export default async function handler(req, res) {
     }
 
     try {
-      const response = await axios.post('https://bb4f-67-188-146-74.ngrok-free.app/api/get_file', {
+      const response = await axios.post(api_endpoint + '/api/get_file', {
         file: fileName
       }, {
         headers: {
