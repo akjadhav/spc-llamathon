@@ -1,11 +1,12 @@
-export type ItemType = 'text' | 'comment' | 'test' | 'edit'
+export type ItemType = 'text' | 'comment' | 'generate' | 'test' | 'edit'
 
 export class HistoryItem {
   key: string
   type: ItemType
   pathFileName: string
-  description: string
   timeStamp: string
+  description: string
+  functionName: string
   inProgress: boolean
   failed: boolean
 
@@ -15,6 +16,7 @@ export class HistoryItem {
     pathFileName: string,
     timeStamp: string,
     description: string = '',
+    functionName: string = '',
     inProgress: boolean = false,
     failed: boolean = false
   ) {
@@ -23,6 +25,7 @@ export class HistoryItem {
     this.pathFileName = pathFileName
     this.timeStamp = this.processTimeStamp(timeStamp);
     this.description = description
+    this.functionName = functionName
     this.inProgress = inProgress
     this.failed = failed
   }

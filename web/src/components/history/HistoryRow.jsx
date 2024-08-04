@@ -40,6 +40,9 @@ const HistoryRow = ({ item }) => {
               {item.type === 'comment' && (
                 <div className='py-1 truncates'>Commenting {item.pathFileName}</div>
               )}
+              {item.type === 'generate' && (
+                <div className='py-1 truncates'>Generate test for {item.functionName} in {item.pathFileName}</div>
+              )}
               {item.type === 'edit' && (
                 <div className='py-1 truncates'>{item.pathFileName} edited in PR</div>
               )}
