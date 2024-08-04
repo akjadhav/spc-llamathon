@@ -462,7 +462,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
             add_text_update(f"Error processing PR: {e}", inProgress=False) 
         add_text_update(f"Running TestNinja", inProgress=False, key='running_test_ninja_update')
 
-        # push_changes_to_pr(repo, head_ref)
+        push_changes_to_pr(repo, head_ref)
 
         end_process(repo_path)
     except (GitCommandError, Exception) as e:
