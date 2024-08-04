@@ -94,7 +94,7 @@ def get_file_from_request():
             'type': 'test' if '.test.' in file_name else 'comment',
             'data': file_contents,
             'testStatus': [{'test1': True}, {'test2': False}],
-            'lineErrors': [],
+            'failedLines': [],
             'fileName': file_name
         }
         

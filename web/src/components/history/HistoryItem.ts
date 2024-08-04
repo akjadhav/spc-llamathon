@@ -35,8 +35,9 @@ export class HistoryItem {
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
+    const milliseconds = date.getMilliseconds();
 
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} PDT`;
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}:${milliseconds} PDT`;
   }
 }
 

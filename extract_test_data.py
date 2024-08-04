@@ -6,7 +6,7 @@ import re
     
 #     return sample_text
 
-def retrieve_jest_test_file(file_path):
+def retrieve_jest_test_file(jest_path):
     # Reading the file and storing its contents in a variable.
     with open(jest_path, 'r') as file:
         jest_text = file.read()
@@ -109,10 +109,10 @@ def extract_data(test_out, jest_path):
     return test_status_mapping, failed_context, failed_lines
 
 
-# file_path = 'sample_data/stderr.txt'
-test_out = """
-  ✓ multiply
-  ✓ sumOfSquares
-"""
-jest_path = 'sample_data/example.test.js'
-res, failed_context, failed_details = extract_data(test_out, jest_path)
+# # file_path = 'sample_data/stderr.txt'
+# test_out = """
+#   ✓ multiply
+#   ✓ sumOfSquares
+# """
+# jest_path = 'sample_data/example.test.js'
+# res, failed_context, failed_details = extract_data(test_out, jest_path)

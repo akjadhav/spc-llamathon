@@ -141,7 +141,7 @@ describe('multiply function', () => {
   });
 });
               `,
-          linesFailed: [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
+            failedLines: [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
           testStatus: { suite1: { func1: false, func2: true } },
         })
       }
@@ -151,7 +151,7 @@ describe('multiply function', () => {
   }, [fileSelectedPath])
 
   useEffect(() => {
-    setHighlightedLineNumbers(file && new Set(file.linesFailed))
+    setHighlightedLineNumbers(file && new Set(file.failedLines))
   }, [file])
 
   return (
