@@ -80,7 +80,7 @@ def get_file_from_request():
         file_path = os.path.join(repo_path, file_name)
         
         if not os.path.exists(file_path):
-            abort(404, description=f"File not found: {file_name}")
+            abort(404, description=f"File not found at path: {file_path}")
         
         with open(file_path, 'r') as file:
             file_contents = file.read()
@@ -382,10 +382,10 @@ def push_changes_to_pr(repo, file_path, branch_name):
 def clean_up_local_repo(repo_path):
     try:
         add_text_update(f"Processing", inProgress=False, key='processing_start_update')
-        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=True)
-        print(f"Cleaning up local repository at {repo_path}...")
+        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=True)
+        print(f"Cleaning up local repository at {repo_path}")
         shutil.rmtree(repo_path)
-        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=False)
+        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=False)
         add_text_update(f"Clean up successful.", inProgress=False)
         print("Clean up successful.")
         bot.set_status('COMPLETE')
