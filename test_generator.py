@@ -243,7 +243,7 @@ class Test_Generator:
                     self._send_data_to_flask(f"Redeploying agent to generate tests for {self.func_name}() in {self.get_relative_path(file_path, self.repo_path)}")
                     self._send_data_to_flask(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
                 else: 
-                    self._send_data_to_flask(f"Failed tests for {self.func_name}() in {self.get_relative_path(file_path, self.repo_path)} are due to incorrect function implementation. Test generation has concluded.")
+                    self._send_data_to_flask(f"Failed tests for {self.func_name}() in {self.get_relative_path(file_path, self.repo_path)} due to incorrect function implementation. Test generation has concluded.")
                     print("LOG: Test is correct, but the function is incorrect. ")
                     # The test is correct, but the function is incorrect
                     main_test_file_path = file_path.replace(".js", ".test.js")
