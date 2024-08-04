@@ -76,21 +76,7 @@ def run_test_ninja(repo_path, node_list):
                         capture_output=True, 
                         text=True, 
                         cwd=repo_path)
-
-                print("LOG: This is the stderr -------")
-                print(result.stderr)
-                print(result.stdout)
-
-                with open("stderr.txt", "w") as f:
-                    f.write(result.stderr)
-
-                with open("stdout.txt", "w") as f:
-                    f.write(result.stdout)
-
-                # todo: write the contents of main_test_file_path to a test.txt
-                with open("test.txt", "w") as f:
-                    with open(main_test_file_path, "r") as f2:
-                        f.write(f2.read())
+                print("LOG: The result of the test run is:", result)
 
                 print("Running Niall's code")
 
