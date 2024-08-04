@@ -103,10 +103,9 @@ def run_test_ninja(repo_path, node_list):
                     main_test_file_path
                 )
 
-                get_relative_path(main_test_file_path, repo_path)
-            
+                        
                 print('About to send data')
-                send_data_to_flask(main_test_file_path, test_status_mapping, failed_lines)
+                send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))
