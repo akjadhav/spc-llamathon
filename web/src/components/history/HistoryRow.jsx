@@ -24,12 +24,12 @@ const HistoryRow = ({ item }) => {
 
   return (
     <>
-      {['test', 'comment', 'edit'].includes(item.type) ? (
+      {['test', 'generate', 'comment', 'edit'].includes(item.type) ? (
         <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
           <div>
             <div className='flex overflow-hidden items-center space-x-2'>
-              <div className={item.type === 'comment' ? 'text-teal-600' : 'text-blue-500'}>
-                {item.type === 'comment' && <FaAlignLeft />}
+              <div className={item.type === 'comment' || item.type === 'generate' ? 'text-teal-600' : 'text-blue-500'}>
+                {item.type === 'comment' || item.type === 'generate' && <FaAlignLeft />}
                 {item.type === 'test' && <SiSpeedtest />}
                 {item.type === 'edit' && <MdEdit />}
               </div>
