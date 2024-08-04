@@ -7,7 +7,18 @@ function add(a, b) {
 
 // Function to multiply two numbers
 function multiply(a, b) {
-    return a * b;
+    let result = 0;
+    while (b !== 0) {
+        // If the least significant bit of b is set, add a to the result
+        if (b & 1) {
+            result = add(result, a);
+        }
+        // Shift a to the left by 1 (equivalent to multiplying by 2)
+        a <<= 1;
+        // Shift b to the right by 1 (equivalent to dividing by 2)
+        b >>= 1;
+    }
+    return result;
 }
 
 // Function to square a number using the multiply function
@@ -46,5 +57,97 @@ function fibonacci(n) {
     return add(fibonacci(n - 1), fibonacci(n - 2));
 }
 
+// Function to calculate the greatest common divisor of two numbers
+function gcd(a, b) {
+    if (b === 0) {
+        return a;
+    }
+    return gcd(b, a % b);
+}
+
+// Function to calculate the least common multiple of two numbers using the gcd function
+function lcm(a, b) {
+    return multiply(a, b) / gcd(a, b);
+}
+
+// Function to calculate the average of an array of numbers
+function average(arr) {
+    const sum = arr.reduce(add, 0);
+    return sum / arr.length;
+}
+
+// Function to find the maximum number in an array using the Math.max function
+function max(arr) {
+    return Math.max(...arr);
+}
+
+// Function to find the minimum number in an array using the Math.min function
+function min(arr) {
+    return Math.min(...arr);
+}
+
+// Function to calculate the range of an array of numbers using the max and min functions
+function range(arr) {
+    return subtract(max(arr), min(arr));
+}
+
+// Function to subtract two numbers
+function subtract(a, b) {
+    return a - b;
+}
+
+// Function to calculate the median of an array of numbers
+function median(arr) {
+    const sorted = arr.slice().sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    if (isEven(sorted.length)) {
+        return average([sorted[mid - 1], sorted[mid]]);
+    }
+    return sorted[mid];
+}
+
+// Function to calculate the mode of an array of numbers
+function mode(arr) {
+    const frequency = {};
+    arr.forEach(num => {
+        if (!frequency[num]) {
+            frequency[num] = 0;
+        }
+        frequency[num]++;
+    });
+    let maxFreq = 0;
+    let mode = [];
+    for (const num in frequency) {
+        if (frequency[num] > maxFreq) {
+            maxFreq = frequency[num];
+            mode = [Number(num)];
+        } else if (frequency[num] === maxFreq) {
+            mode.push(Number(num));
+        }
+    }
+    if (mode.length === arr.length) {
+        return [];
+    }
+    return mode;
+}
+
 // Exporting functions for use in other modules
-module.exports = add
+module.exports = {
+    add,
+    multiply,
+    square,
+    sumOfSquares,
+    factorial,
+    isEven,
+    isOdd,
+    fibonacci,
+    gcd,
+    lcm,
+    average,
+    max,
+    min,
+    range,
+    subtract,
+    median,
+    mode
+};

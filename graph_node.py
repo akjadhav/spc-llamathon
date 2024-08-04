@@ -8,7 +8,11 @@ class GraphNode:
         self.changed = changed
 
         # self.key = f"{file_path}:{line_start}:{func_name}"
-        self.key = f"{file_path}:{func_name}"
+        # self.key = f"{file_path}:{func_name}"
+        self.rebuild_key()
+
+    def rebuild_key(self):
+        self.key = f"{self.file_path}:{self.func_name}"
 
     def __eq__(self, other):
         if isinstance(other, GraphNode):
