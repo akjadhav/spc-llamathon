@@ -34,7 +34,7 @@ def get_relative_path(absolute_path, base_path):
     
     return relative_path
 
-def run_test_ninja(repo_path, node_list):    
+def run_test_ninja(repo_path, node_list):
     test_generator = Test_Generator(repo_path=repo_path)
     
     print("node file names")
