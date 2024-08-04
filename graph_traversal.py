@@ -50,10 +50,6 @@ def get_target_subtrees(graph, node_list):
 
         if filtered_subgraph.number_of_nodes() == 0:
             continue
-        else:
-            pdb.set_trace()
-
-        # print("is tree:", nx.is_tree(filtered_subgraph))
 
         out += get_traversal_list(filtered_subgraph)
         # out += l
@@ -64,7 +60,6 @@ def create_traversal_list_from_nodes(dir, node_list):
     paths = get_js_file_paths(dir)
     G = create_dependency_graph(paths, dir)
     out = get_target_subtrees(G, node_list)
-    pdb.set_trace()
     return out
 
 if __name__ == "__main__":
