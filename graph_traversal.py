@@ -1,6 +1,6 @@
 from graph_node import GraphNode
 import networkx as nx
-from parser import get_js_file_paths, create_dependency_graph
+from parser import get_js_file_paths, create_dependency_graph, plot_graph
 import pdb
 
 def find_tree_root(G):
@@ -30,6 +30,7 @@ def _get_subtree(G, root, items_changed):
                 if child not in subtree:
                     dfs(child, subtree)
                 if child in subtree:
+                    # pdb.set_trace()
                     subtree.add_edge(node, child)
 
     new_subtree = nx.DiGraph()
@@ -50,9 +51,11 @@ def get_target_subtrees(graph, node_list):
 
         if filtered_subgraph.number_of_nodes() == 0:
             continue
+        else:
+            # pdb.set_trace()
+            ...
 
         out += get_traversal_list(filtered_subgraph)
-        # out += l
     return out
 
 # Insertion point for flask-app
