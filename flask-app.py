@@ -65,6 +65,18 @@ def receive_data():
 
     return jsonify({"message": "Data received", "data": data}), 200
 
+@app.route('/receive_test_ninja_update', methods=['POST'])
+def receive_test_ninja_update():
+    data = request.get_json()
+
+    if not data:
+        abort(400, description="No data received")
+
+    if data:
+        add_test_file_update(data['testFileName'], "Test generated for " + data['testFileName'], inProgress=False)
+
+    return jsonify({"message": "Data received", "data": data}), 200
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if not verify_github_signature(request):
@@ -96,12 +108,15 @@ def bot_status():
 @app.route('/api/get_file', methods=['POST'])
 def get_file_from_request():
     file_name = request.json.get('fileName')
+
+    print(file_name)
     
     if not file_name:
         abort(400, description="File name is required")
     
     try:
         file_path = os.path.join(repo_path, file_name)
+        print('File path:', file_path)
         
         if not os.path.exists(file_path):
             abort(404, description=f"File not found at path: {file_path}")
@@ -109,7 +124,8 @@ def get_file_from_request():
         with open(file_path, 'r') as file:
             file_contents = file.read()
 
-        # TODO: fix hash finding code
+        if file_name not in test_hash:
+            test_hash[file_name] = {'failedLines': [], 'testStatusMapping': {}}
         test_file_metadata = test_hash[file_name]
         
         data = {
@@ -136,7 +152,7 @@ def add_text_update(text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
-    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    # data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
     
     data.append({
         'key': key if key else text,
@@ -151,7 +167,7 @@ def add_test_file_update(pathFileName, text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
-    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    # data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
     
     data.append({
         'key': key if key else text,
@@ -162,11 +178,26 @@ def add_test_file_update(pathFileName, text, inProgress=False, key=None):
         'timestamp': current_time
     })
 
+def add_comment_file_update(pathFileName, text, inProgress=False, key=None):
+    current_time = datetime.now()
+    
+    global data
+    # data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    
+    data.append({
+        'key': key if key else text,
+        'type': 'comment',
+        'pathFileName': pathFileName,
+        'description': text,
+        'inProgress': inProgress,
+        'timestamp': current_time
+    })
+
 def add_edit_file_update(pathFileName, text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
-    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    # data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
     
     data.append({
         'key': key if key else text,
@@ -390,7 +421,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
                 print(parsed_diff)
                 for node in parsed_diff:
-                    add_text_update(f"Generated function node from changed code: {node}", inProgress=False)
+                    add_comment_file_update(file, f"Generated function node from changed code: {node}", inProgress=False)
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 
@@ -402,14 +433,14 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         print(node_list)
         print("===================================")
 
-        add_text_update(f"Running TestNinja", inProgress=True)
+        add_text_update(f"Running TestNinja", inProgress=True, key='running_test_ninja_update')
         try:
             run_test_ninja(repo_path, node_list)
         except Exception as e:
             bot.set_status('ERROR')
             print(f"Error processing PR when running test ninja: {e}")
             add_text_update(f"Error processing PR: {e}", inProgress=False) 
-        add_text_update(f"Running TestNinja", inProgress=False)
+        add_text_update(f"Running TestNinja", inProgress=False, key='running_test_ninja_update')
 
         end_process(repo_path)
     except (GitCommandError, Exception) as e:
