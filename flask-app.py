@@ -126,7 +126,7 @@ def get_file_from_request():
         with open(file_path, 'r') as file:
             file_contents = file.read()
 
-        if file_name not in test_hash:
+        if file_name not in test_hash.keys():
             test_hash[file_name] = {'failedLines': [], 'testStatusMapping': {}}
         test_file_metadata = test_hash[file_name]
         
@@ -404,11 +404,11 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
 
         # Fetch the PR branch
         try:
-            add_text_update(f"Fetching the PR branch {head_ref}...", inProgress=True)
-            print(f"Fetching the PR branch {head_ref}...")
+            add_text_update(f"Fetching the PR branch {head_ref}", inProgress=True)
+            print(f"Fetching the PR branch {head_ref}")
             origin.fetch(f'pull/{pr_number}/head:{head_ref}')
             repo.git.checkout(head_ref)
-            add_text_update(f"Fetching the PR branch {head_ref}...", inProgress=False)
+            add_text_update(f"Fetching the PR branch {head_ref}", inProgress=False)
         except GitCommandError as e:
             bot.set_status('ERROR')
             print(f"Error fetching PR: {e}")
