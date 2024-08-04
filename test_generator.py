@@ -112,7 +112,7 @@ class Test_Generator:
             "1. The test suite is incorrect and needs to be revised.\n"
             "2. The test suite is correct, and the error is due to an issue in the JavaScript function being tested."
         )
-
+        
         # Call the Baseten API to evaluate the test and error message
         print("LOG: Evaluating the test suite and error message with LLM")
         evaluation = self._call_baseten_api(prompt)
