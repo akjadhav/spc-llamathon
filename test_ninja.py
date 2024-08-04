@@ -62,18 +62,31 @@ def run_test_ninja(repo_path, node_list):
                 # We have generated all the tests for this file
                 # Run the code and get the output
                 print("LOG: The final running of tests is occruing")
+                print("LOG: The main test file path is:", main_test_file_path)
                 result = subprocess.run(['npx', 'jest', main_test_file_path], 
                         capture_output=True, 
                         text=True, 
                         cwd=repo_path)
-                stderr = result.stderr
 
-                #TODO: send main_test_file_path
+                print("LOG: This is the stderr -------")
+                print(result.stderr)
+                print(result.stdout)
 
-                print("LOG: This is the stderr:", stderr)
+                with open("stderr.txt", "w") as f:
+                    f.write(result.stderr)
+
+                with open("stdout.txt", "w") as f:
+                    f.write(result.stdout)
+
+                # todo: write the contents of main_test_file_path to a test.txt
+                with open("test.txt", "w") as f:
+                    with open(main_test_file_path, "r") as f2:
+                        f.write(f2.read())
+
+                # Then we finally send the output to Niall
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
-                    stderr,
+                    result.stderr, # NAHUM LOOK HERE
                     main_test_file_path
                 )
             
