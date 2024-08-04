@@ -46,7 +46,11 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
                 // check if item is test and is now not in progress but was before, we want to open the file
-                if (item.type === 'test' && prevOutputKeyToData[item.key].inProgress && !item.inProgress) {
+                if (
+                  item.type === 'test' &&
+                  prevOutputKeyToData[item.key].inProgress &&
+                  !item.inProgress
+                ) {
                   setFileSelectedPath(item.pathFileName)
                 }
 
@@ -58,7 +62,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               } else {
                 // Add new item
                 updatedOutputKeyToData[item.key] = item
-                if (item.type !== "text" && !item.inProgress) {
+                if (item.type !== 'text' && !item.inProgress) {
                   updatedFiles.push(item.pathFileName)
                 }
                 newKeysAdded = true

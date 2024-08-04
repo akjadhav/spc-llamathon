@@ -117,7 +117,8 @@ def get_file_from_request():
             'data': file_contents,
             'testStatus': test_file_metadata['testStatusMapping'],
             'failedLines': test_file_metadata['failedLines'],
-            'fileName': file_name
+            'fileName': file_name,
+            'failed': len(test_file_metadata['failedLines']) > 0
         }
         
         return jsonify(data), 200
@@ -317,6 +318,8 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
 def process_pull_request(repo_name, pr_number, head_ref, base_ref):
     try:
         bot.set_status('RUNNING')
+        global data
+        data = []
         add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True, key='processing_start_update')
         print(f"Processing PR #{pr_number} from repo {repo_name}")
         # Clone the repo or fetch the latest changes
@@ -399,9 +402,14 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         print(node_list)
         print("===================================")
 
-        add_text_update(f"Running TestNinja", inProgress=True, key='running_test_ninja_update')
-        run_test_ninja(repo_path, node_list)
-        add_text_update(f"Running TestNinja", inProgress=False, key='running_test_ninja_update')
+        add_text_update(f"Running TestNinja", inProgress=True)
+        try:
+            run_test_ninja(repo_path, node_list)
+        except Exception as e:
+            bot.set_status('ERROR')
+            print(f"Error processing PR when running test ninja: {e}")
+            add_text_update(f"Error processing PR: {e}", inProgress=False) 
+        add_text_update(f"Running TestNinja", inProgress=False)
 
         end_process(repo_path)
     except (GitCommandError, Exception) as e:

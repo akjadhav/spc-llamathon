@@ -77,9 +77,7 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
       </div>
 
       <TabPanel>
-        <History files={files}
-          setFiles={setFiles}
-          setFileSelectedPath={setFileSelectedPath} />
+        <History files={files} setFiles={setFiles} setFileSelectedPath={setFileSelectedPath} />
       </TabPanel>
       <TabPanel>
         <Files

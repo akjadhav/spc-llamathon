@@ -12,6 +12,15 @@ from extract_test_data import extract_data
 def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
     url = 'http://localhost:5002/receive_data'
 
+    print("Sending data to flask")
+    print("testFileName:", testFileName)
+    print("test_status_mapping:", test_status_mapping)
+    print("failed_lines:", failed_lines)
+    print("--------------------")
+    print("type of testFileName:", type(testFileName))
+    print("type of test_status_mapping:", type(test_status_mapping))
+    print("type of failed_lines:", type(failed_lines))
+
     data = {
         'testFileName': testFileName,
         'testStatusMapping': test_status_mapping,
@@ -24,7 +33,7 @@ def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines
 
     response = requests.post(url, data=json_data, headers=headers)
 
-def run_test_ninja(repo_path, node_list):
+def run_test_ninja(repo_path, node_list):    
     test_generator = Test_Generator(repo_path=repo_path)
     
     print("node file names")
@@ -83,13 +92,14 @@ def run_test_ninja(repo_path, node_list):
                     with open(main_test_file_path, "r") as f2:
                         f.write(f2.read())
 
-                # Then we finally send the output to Niall
+                print("Running Niall's code")
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
                     result.stderr, # NAHUM LOOK HERE
                     main_test_file_path
                 )
             
+                print('About to send data')
                 send_data_to_flask(main_test_file_path, test_status_mapping, failed_lines)
 
     except Exception as e:
