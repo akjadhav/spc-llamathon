@@ -16,6 +16,7 @@ def get_func_dependencies_json(paths):
     process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     json_str = stdout.decode()
+    print("loading json:", json_str)
     data = json.loads(json_str)
     return data
 
