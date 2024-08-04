@@ -1,6 +1,7 @@
 from graph_node import GraphNode
 import networkx as nx
 from parser import get_js_file_paths, create_dependency_graph
+import pdb
 
 def find_tree_root(G):
     # Find the root node
@@ -55,8 +56,13 @@ def create_traversal_list_from_nodes(dir, node_list):
     return get_target_subtrees(G, node_list)
 
 if __name__ == "__main__":
-    dir = "/Users/cc/Code/llamathon/spc-llamathon-example/utils/"
-    path = "/Users/cc/Code/llamathon/spc-llamathon-example/utils/math.js"
-    node_list = [GraphNode("multiply", path, 4, 6)]
-    out = create_traversal_list_from_nodes(dir, node_list)
-    print(out)
+    dir = "spc-llamathon-example/utils/"
+    path = "spc-llamathon-example/utils/math.js"
+    node_list = [GraphNode("multiply", path, 4, 6), GraphNode("sumOfSquares", path, 18, 21)]
+    print(node_list)
+    #pdb.set_trace()
+    out = create_traversal_list_from_nodes(dir, node_list) 
+    print(f"Length of traversal list: {len(out)}")
+    for i in range(len(out)):
+        print(out[i].get_code())
+        print("--------------------")

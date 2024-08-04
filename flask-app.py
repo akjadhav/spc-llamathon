@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 
 from graph_node import GraphNode
 from graph_traversal import create_traversal_list_from_nodes
+from test_ninja import run_test_ninja
 
 load_dotenv()
 
@@ -270,11 +271,14 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 
-        # Create a graph from the changed nodes
-        # node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
-        # print("============ Node List ============")
-        # print(node_list)
-        # print("===================================")
+        # Agent that generates tests for all changed nodes is actited and runs here!
+        node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+
+        print("============ Node List ============")
+        print(node_list)
+        print("===================================")
+
+        run_test_ninja(repo_path, node_list)
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:

@@ -2,6 +2,4 @@ slimit
 networkx
 matplotlib
 requests
-gitpython
-substrate
 flask

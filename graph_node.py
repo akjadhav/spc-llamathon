@@ -29,4 +29,4 @@ class GraphNode:
             lines = file.readlines()
             code_lines = lines[self.line_start-1:self.line_end]
             code = ''.join(code_lines)
-            return code
+            return (self.file_path, self.func_name, code)

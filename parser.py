@@ -4,7 +4,7 @@ import networkx as nx
 import sys
 import os
 import matplotlib.pyplot as plt
-
+import pdb
 from graph_node import GraphNode as Node
 
 def get_func_dependencies_json(paths):
@@ -23,6 +23,7 @@ def get_func_dependencies_json(paths):
 def create_dependency_graph(paths):
     graph = nx.DiGraph()
     json_data = get_func_dependencies_json(paths)
+    # pdb.set_trace()
     
     for f, dependencies in json_data.items():
         graph.add_node(Node(f, dependencies["path"], dependencies["start"], dependencies["end"]))
