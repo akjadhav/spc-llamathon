@@ -146,7 +146,6 @@ Test Suites: 1 failed, 1 total
 Tests:       0 total
 Snapshots:   0 total
 Time:        0.129 s
-Ran all test suites matching /\/tmp\/akjadhav\/spc-llamathon-example\/utils\/math.test.js/i.
     """
     jest_path = 'sample_data/example.test.js'
     res, failed_context, failed_details = extract_data(test_out, jest_path)
