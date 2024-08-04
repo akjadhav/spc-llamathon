@@ -29,6 +29,8 @@ data = []
 
 repo_path = '/tmp/akjadhav/spc-llamathon-example'
 
+test_hash = {}
+
 bot = BotStatus()
 
 def verify_github_signature(request):
@@ -84,11 +86,15 @@ def get_file_from_request():
         
         with open(file_path, 'r') as file:
             file_contents = file.read()
+
+        # TODO: fix hash finding code
+        test_hash[file_name] = file_contents
         
         data = {
             'type': 'test' if '.test.' in file_name else 'comment',
             'data': file_contents,
-            'testStates': [{'test1': True}, {'test2': False}],
+            'testStatus': [{'test1': True}, {'test2': False}],
+            'lineErrors': [],
             'fileName': file_name
         }
         
@@ -118,7 +124,7 @@ def add_text_update(text, inProgress=False, key=None):
         'timestamp': current_time
     })
 
-def add_file_update(text, inProgress=False, key=None):
+def add_test_file_update(pathFileName, text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
@@ -126,8 +132,23 @@ def add_file_update(text, inProgress=False, key=None):
     
     data.append({
         'key': key if key else text,
-        'type': 'file',
-        'pathFileName': 'N/A',
+        'type': 'test',
+        'pathFileName': pathFileName,
+        'description': text,
+        'inProgress': inProgress,
+        'timestamp': current_time
+    })
+
+def add_edit_file_update(pathFileName, text, inProgress=False, key=None):
+    current_time = datetime.now()
+    
+    global data
+    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    
+    data.append({
+        'key': key if key else text,
+        'type': 'edit',
+        'pathFileName': pathFileName,
         'description': text,
         'inProgress': inProgress,
         'timestamp': current_time
@@ -332,6 +353,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
 
         for file in changed_files:
             add_text_update(f"File was changed: {file}", inProgress=False)
+            add_edit_file_update(file, file + " changed in PR", inProgress=False)
 
         all_changed_nodes = []
 

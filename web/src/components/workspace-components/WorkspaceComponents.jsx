@@ -84,7 +84,7 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath, file
           jobID={jobID}
           fileSelectedPath={fileSelectedPath}
           setFileSelectedPath={setFileSelectedPath}
-          files={files} 
+          files={files}
           setFiles={setFiles}
         />
       </TabPanel>
