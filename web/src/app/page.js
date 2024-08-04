@@ -42,7 +42,7 @@ export default function Home() {
         </div>
         <div className='flex flex-col h-full items-center justify-center relative z-10'>
           <div className='relative text-center'>
-            <h1 className='font-bold mb-8 text-6xl text-white'>CodeNinja.</h1>
+            <h1 className='mb-8 text-6xl text-white chakra-petch-semibold'>TestNinja.</h1>
 
             <button
               className='animate-pulse bg-white duration-300 ease-in-out font-semibold hover:bg-gray-200 px-8 py-4 rounded-full shadow-lg text-black transition'

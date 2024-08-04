@@ -9,7 +9,7 @@ import { VscSparkleFilled, VscCircleFilled } from 'react-icons/vsc'
 import { FaRobot, FaUser } from 'react-icons/fa'
 import { Pill } from '@thumbtack/thumbprint-react'
 
-const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath, files, setFiles }) => {
+const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setFiles }) => {
   const [status, setStatus] = useState('')
 
   useEffect(() => {
@@ -29,13 +29,13 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath, file
     const intervalId = setInterval(fetchAgentStatus, 1500)
 
     return () => clearInterval(intervalId)
-  }, [jobID])
+  }, [])
 
   return (
     <Tabs className='h-full flex flex-col bg-gray-950'>
       <TabList className='border-b border-neutral-600 flex pb-1 bg-gray-900'>
         <Tab
-          className='border-b-2 border-transparent cursor-pointer flex focus:outline-none hover:border-gray-300 hover:text-gray-600 items-center px-4 py-2 space-x-2 text-md'
+          className='border-transparent cursor-pointer flex focus:outline-none hover:border-gray-300 hover:text-gray-600 items-center px-4 py-2 space-x-2 text-md'
           selectedClassName='bg-white text-black rounded-lg'
         >
           <FaTerminal className='text-lg' />
@@ -77,14 +77,13 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath, file
       </div>
 
       <TabPanel>
-        <History jobID={jobID} files={files} setFiles={setFiles} />
+        <History files={files} setFiles={setFiles} />
       </TabPanel>
       <TabPanel>
         <Files
-          jobID={jobID}
           fileSelectedPath={fileSelectedPath}
           setFileSelectedPath={setFileSelectedPath}
-          files={files} 
+          files={files}
           setFiles={setFiles}
         />
       </TabPanel>
