@@ -20,7 +20,7 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
 
         const status = jsonData.data
         console.log(status)
-        setStatus(status)
+        setStatus(status.toUpperCase())
       } catch (error) {
         // console.error('Failed to fetch data:', error);
       }
