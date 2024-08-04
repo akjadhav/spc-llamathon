@@ -83,22 +83,27 @@ def run_test_ninja(repo_path, node_list):
 
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
-                    result.stderr, # NAHUM LOOK HERE
+                    result.stderr,
                     main_test_file_path
                 )
 
+                print('====================')
+                print("Test Status Mapping:", test_status_mapping)
+                print("Failed Lines:", failed_lines)
                         
-                print('About to send data')
+                print('About to send data from ninja to flask')
                 send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
 
-                os.mkdir(repo_path + "/test-logs/utils")
-                # write result.stderr
+                # Create the directory if it doesn't exist
+                os.makedirs(repo_path + "/test-logs/utils", exist_ok=True)
+
+                # Write result.stderr
                 with open(repo_path + "/test-logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stderr.txt"), "w") as f:
                     f.write(result.stderr)
 
+                # Write result.stdout
                 with open(repo_path + "/test-logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stdout.txt"), "w") as f:
                     f.write(result.stdout)
-
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))

@@ -176,3 +176,4 @@ package-lock.json
 llamathon-env
 
 web/src/api_endpoint.js
+tmp_data.json
