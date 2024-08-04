@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv # type: ignore
 import re
 from flask_cors import CORS
+from datetime import datetime, timedelta
 
 from graph_node import GraphNode
 from graph_traversal import create_traversal_list_from_nodes
@@ -20,6 +21,9 @@ cors = CORS(app)
 
 GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
+# Global data list to store updates
+data = []
 
 def verify_github_signature(request):
     signature = request.headers.get('X-Hub-Signature')
@@ -54,17 +58,30 @@ def webhook():
 
 @app.route('/api/update', methods=['GET'])
 def send_update():
-    data = [{
-        'key': 'Update not sent',
-        'type': 'text',
-        'pathFileName': 'Update received',
-        'description': 'Update not sent',
-        'inProgress': False
-    }]
-
     response = jsonify(data)
     response.headers['Content-Type'] = 'application/json'
     return response
+
+def add_text_update(text, inProgress=False):
+    current_time = datetime.now()
+    
+    global data
+    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    
+    data.append({
+        'key': text,
+        'type': 'text',
+        'pathFileName': 'N/A',
+        'description': text,
+        'inProgress': inProgress,
+        'timestamp': current_time
+    })
+
+# Example usage
+# @app.route('/api/add_update/<update>', methods=['GET'])
+# def add_update_route(update):
+#     add_update(update)
+#     return "Update added successfully", 200
 
 def parse_diff_for_filenames_and_functions(diff_output, repo_path):
     # Regular expression to match the diff header line that contains the file name and path
@@ -200,6 +217,7 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
 
 def process_pull_request(repo_name, pr_number, head_ref, base_ref):
     try:
+        add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True)
         print(f"Processing PR #{pr_number} from repo {repo_name}")
         # Clone the repo or fetch the latest changes
         repo_path = f'/tmp/{repo_name}'
