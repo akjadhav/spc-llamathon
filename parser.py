@@ -18,7 +18,7 @@ def get_func_dependencies_json(paths):
     json_str = stdout.decode()
     stde = stderr.decode()
     data = json.loads(json_str)
-
+    print("parsing stderr: ", stde)
     return data
 
 def clean_path(path, dir):

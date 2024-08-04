@@ -480,9 +480,11 @@ def push_changes_to_pr(repo, branch_name):
 
 def clean_up_local_repo(repo_path):
     try:
-        print(f"Cleaning up local repository at {repo_path}")
-        shutil.rmtree(repo_path)
-        print("Clean up successful.")
+        # check if repo exists
+        if os.path.exists(repo_path):
+            print(f"Cleaning up local repository at {repo_path}")
+            shutil.rmtree(repo_path)
+            print("Clean up successful.")
     except Exception as e:
         bot.set_status('ERROR')
         print(f"Error cleaning up local repository: {e}")
