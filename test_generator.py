@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import pdb
 import utils
 import json
+from extract_test_data import extract_data
 
 load_dotenv()
 
@@ -25,25 +26,23 @@ class Test_Generator:
             {"role": "user", "content": prompt},
         ]
         
-        output = utils.generate_together(
-            model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
-            messages=messages,
-            max_tokens=768,
-            temperature=0.7,    
-        )
-
-        # stream_res = utils.generate_baseten_stream(
-        #     prompt,
-        #     max_tokens=2048,
-        #     temperature=0.7,
+        # output = utils.generate_together(
+        #     model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
+        #     messages=messages,
+        #     max_tokens=768,
+        #     temperature=0.7,    
         # )
 
-        # output = ""
-        # # stream_res will send continuous stream of data
-        # for content in stream_res:
-        #     output += content.decode("utf-8")
-        #     # TODO: Hook this up this up to the front end so that it will update the output in real time
-        #     # print(output)
+        stream_res = utils.generate_baseten_stream(
+            prompt,
+            max_tokens=2048,
+            temperature=0.7,
+        )
+
+        output = ""
+        # stream_res will send continuous stream of data
+        for content in stream_res:
+            output += content.decode("utf-8")
 
         return output
         
@@ -140,6 +139,10 @@ class Test_Generator:
             print("-------------------")
             print("LOG: Test execution result: ", stderr)
             print(f"{stdout}")
+
+            # extract_data(stdout, self.repo_path + '')
+
+
             print("-------------------")
             # # write stdout and stderr to a file
             # with open("stdout.txt", "w") as file:
@@ -152,7 +155,7 @@ class Test_Generator:
         except Exception as e:
             return str(e)
         
-        
+        # tests are written to main test file in the happy case here
         main_test_file_path = file_path.replace(".js", ".test.js")
         
         # Test is valid and it works — add it to the main test file!
@@ -162,7 +165,7 @@ class Test_Generator:
         with open(main_test_file_path, file_mode) as test_file:
             test_file.write(test_code)
         
-        return "All tests passed successfully."
+        return ("All tests passed successfully.", main_test_file_path)
 
 
     def _extract_tests(self, test_code):
@@ -201,9 +204,11 @@ class Test_Generator:
             print("LOG: Tests have been parsed")
 
             print(f"LOG: Generated test code:\n{extracted_tests}")
-            result = self.execute_test(extracted_tests, file_path)  # Using the target file's path for naming the test file
+            outputs = self.execute_test(extracted_tests, file_path)  # Using the target file's path for naming the test file
+            result, main_test_file_path = outputs[0], outputs[1]
+            
             if "All tests passed successfully." in result:
-                return test_code
+                return extracted_tests, main_test_file_path
             else:
                 if self._is_test_incorrect(test_code, result):
                     previous_test_code = test_code
@@ -217,12 +222,14 @@ class Test_Generator:
         
                     # Test is valid and it works — add it to the main test file!
                     # Check if the file exists and set the mode accordingly
+
+                    # In the case where tests are not immediately passed, we add it here
                     file_mode = 'a' if os.path.exists(main_test_file_path) else 'w'
                     
                     with open(main_test_file_path, file_mode) as test_file:
                         test_file.write(extracted_tests)
                     
-                    return extracted_tests
+                    return extracted_tests, main_test_file_path
         
         raise Exception("Failed to generate a valid test after 5 attempts.")
 
