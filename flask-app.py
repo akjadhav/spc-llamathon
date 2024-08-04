@@ -88,7 +88,7 @@ def webhook():
     if event == 'pull_request':
         payload = request.json
         action = payload.get('action')
-        if action in ['opened', 'synchronize']:
+        if action in ['opened']:
             pr = payload.get('pull_request')
             repo_name = payload['repository']['full_name']
             pr_number = pr['number']
