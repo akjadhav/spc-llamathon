@@ -7,7 +7,6 @@ import TestDisplay from './TestDisplay'
 SyntaxHighlighter.registerLanguage('javascript', js)
 
 const Terminal = ({ fileSelectedPath }) => {
-
   const [file, setFile] = useState(undefined)
   const [highlightedLineNumbers, setHighlightedLineNumbers] = useState(new Set())
 
@@ -179,7 +178,6 @@ describe('multiply function', () => {
             }}
           >
             {file && file.data}
-            {/* {fileContent} */}
           </SyntaxHighlighter>
         </div>
       </div>
@@ -187,6 +185,7 @@ describe('multiply function', () => {
         <TestDisplay testStatus={file.testStatus} />
       }
 
+      {/* Test Display Demo */}
       {/* {
         <TestDisplay testStatus={{ suite1: { func1: false, func2: true }, suite2: { func1: true, func2: true } }} />
       } */}
