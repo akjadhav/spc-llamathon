@@ -7,11 +7,11 @@ load_dotenv()
 # model_id = os.getenv("BASETEN_MODEL_ID")
 # baseten_api_key = os.getenv("BASETEN_API_KEY")
 
-model_id = os.getenv("BASETEN_70_PERSONAL_MODEL_ID")
-baseten_api_key = os.getenv("BASETEN_70_PERSONAL_API_KEY")
+# model_id = os.getenv("BASETEN_70_PERSONAL_MODEL_ID")
+# baseten_api_key = os.getenv("BASETEN_70_PERSONAL_API_KEY")
 
-# model_id = os.getenv("BASETEN_405_MODEL_ID")
-# baseten_api_key = os.getenv("BASETEN_405_API_KEY")
+model_id = os.getenv("BASETEN_405_MODEL_ID")
+baseten_api_key = os.getenv("BASETEN_405_API_KEY")
 
 def call_no_stream_baseten_api(prompt, max_tokens=5000, temperature=0.9):
     data = {
