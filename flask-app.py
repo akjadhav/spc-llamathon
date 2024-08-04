@@ -114,6 +114,21 @@ def add_text_update(text, inProgress=False, key=None):
         'timestamp': current_time
     })
 
+def add_file_update(text, inProgress=False, key=None):
+    current_time = datetime.now()
+    
+    global data
+    data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
+    
+    data.append({
+        'key': key if key else text,
+        'type': 'file',
+        'pathFileName': 'N/A',
+        'description': text,
+        'inProgress': inProgress,
+        'timestamp': current_time
+    })
+
 # Example usage
 # @app.route('/api/add_update/<update>', methods=['GET'])
 # def add_update_route(update):
@@ -260,6 +275,8 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         # Clone the repo or fetch the latest changes
         repo_path = f'/tmp/{repo_name}'
         repo_url = f'https://{GITHUB_TOKEN}@github.com/{repo_name}.git'
+
+        #raise Exception("Test error")
         
         try:
             if os.path.exists(repo_path):
@@ -324,13 +341,16 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 all_changed_nodes.extend(parsed_diff)
 
         # Agent that generates tests for all changed nodes is actited and runs here!
-        node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        # node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        node_list = [GraphNode("multiply", "utils/math.js", 9, 22), GraphNode("sumOfSquares", "utils/math.js", 18, 21)]
 
         print("============ Node List ============")
         print(node_list)
         print("===================================")
 
+        add_text_update(f"Running test ninja", inProgress=True)
         run_test_ninja(repo_path, node_list)
+        add_text_update(f"Running test ninja", inProgress=False)
 
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:
