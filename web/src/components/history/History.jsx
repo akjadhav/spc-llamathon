@@ -12,19 +12,8 @@ const History = ({ jobID }) => {
   //     new HistoryItem('test', './index.js', '', true),
   //   ])
 
-  const [outputKeys, setOutputsKeys] = useState([
-    'Test event'
-  ])
-  const [outputKeyToData, setOutputKeyToData] = useState({
-    'Test event': new HistoryItem(
-      'Test event',
-      'text',
-      './index.js',
-      "Sat, 03 Aug 2024 20:24:58 GMT",
-      'Test event',
-      false,
-    ),
-  })
+  const [outputKeys, setOutputsKeys] = useState([])
+  const [outputKeyToData, setOutputKeyToData] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,7 +70,7 @@ const History = ({ jobID }) => {
 
     fetchData()
 
-    const intervalId = setInterval(fetchData, 5000)
+    const intervalId = setInterval(fetchData, 1500)
 
     return () => clearInterval(intervalId)
   }, [])

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { api_endpoint } from '../../../api_endpoint';
 
 export async function GET(request) {
   try {
@@ -28,7 +29,7 @@ async function fetchData() {
 
   // Add a timestamp to the URL to prevent caching
   const timestamp = new Date().getTime();
-  const url = `https://bb4f-67-188-146-74.ngrok-free.app/api/update?t=${timestamp}`;
+  const url = api_endpoint + `/api/update?t=${timestamp}`;
 
   const response = await fetch(url, requestOptions);
 

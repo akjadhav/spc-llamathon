@@ -10,7 +10,7 @@ import { FaRobot, FaUser } from 'react-icons/fa'
 import { Pill } from '@thumbtack/thumbprint-react'
 
 const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) => {
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     const fetchAgentStatus = async () => {
@@ -26,7 +26,7 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) =>
     }
 
     fetchAgentStatus()
-    const intervalId = setInterval(fetchAgentStatus, 5000)
+    const intervalId = setInterval(fetchAgentStatus, 1500)
 
     return () => clearInterval(intervalId)
   }, [jobID])
@@ -70,8 +70,7 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) =>
           )}
           {status === 'ERROR' && (
             <Pill color='red' icon={<VscCircleFilled />}>
-              Error
-              Ready
+              Error Ready
             </Pill>
           )}
         </div>
@@ -81,7 +80,11 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) =>
         <History jobID={jobID} />
       </TabPanel>
       <TabPanel>
-        <Files jobID={jobID} fileSelectedPath={fileSelectedPath} setFileSelectedPath={setFileSelectedPath} />
+        <Files
+          jobID={jobID}
+          fileSelectedPath={fileSelectedPath}
+          setFileSelectedPath={setFileSelectedPath}
+        />
       </TabPanel>
     </Tabs>
   )
