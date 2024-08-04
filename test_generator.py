@@ -107,7 +107,7 @@ class Test_Generator:
     def execute_test(self, test_code, file_path=None):
         # Write the test code to a temporary file to check that it works before we add it to the main test file
         directory = os.path.dirname(file_path)
-        pdb.set_trace()
+        #_trace()
         test_file_path = os.path.join(directory, "temp.test.js")
         with open(test_file_path, "w") as test_file:
             test_file.write(test_code)
