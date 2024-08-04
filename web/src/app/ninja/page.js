@@ -12,15 +12,18 @@ const CodeNinja = () => {
   const [fileSelectedPath, setFileSelectedPath] = useState(undefined);
   const [files, setFiles] = useState([])
 
-
   return (
     <div className='bg-gray-900 flex flex-col w-screen h-screen text-white'>
-      <div className='flex w-full h-full mx-auto p-4'>
+      <div className='px-6 pt-4 w-full'>
+        <h1 className='font-bold text-4xl text-white text-center text-blue-500 chakra-petch-semibold'>TestNinja</h1>
+      </div>
+
+      <div className='flex w-full h-full mx-auto px-6 pt-2 pb-4 '>
         <div className='pr-2 w-1/4'>
-          <WorkspaceComponent jobID={jobID} fileSelectedPath={fileSelectedPath} setFileSelectedPath={setFileSelectedPath} files={files} setFiles={setFiles}/>
+          <WorkspaceComponent jobID={jobID} fileSelectedPath={fileSelectedPath} setFileSelectedPath={setFileSelectedPath} files={files} setFiles={setFiles} />
         </div>
         <div className='pl-2 w-3/4'>
-          <Terminal jobID={jobID} fileSelectedPath={fileSelectedPath}/>
+          <Terminal jobID={jobID} fileSelectedPath={fileSelectedPath} />
         </div>
       </div>
     </div>
