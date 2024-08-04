@@ -13,11 +13,11 @@ def run_test_ninja(repo_path, node_list):
     try:
         context_functions = []
         for node in node_list:
-            target_file_info = (node.file_path, (node.func_name, node.line_start, node.line_end))
+            target_file_info = (os.path.join(repo_path, node.file_path), (node.func_name, node.line_start, node.line_end))
             test_code = test_generator.generate_and_test(target_file_info, context_functions)
             print("Generated test code:\n", test_code)
             # Add the current node's information to the context for the next function
-            context_functions.append((node.func_name, test_generator.read_functions_from_file(node.file_path, (node.func_name, node.line_start, node.line_end))))
+            context_functions.append((node.func_name, test_generator.read_functions_from_file(os.path.join(repo_path, node.file_path), (node.func_name, node.line_start, node.line_end))))
     except Exception as e:
         print("Failed to generate a passing test:", str(e))
 

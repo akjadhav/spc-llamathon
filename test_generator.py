@@ -113,7 +113,7 @@ class Test_Generator:
             test_file.write(test_code)
         
         try:
-            with open(self.repo_path + 'package.json', 'r') as f:
+            with open(self.repo_path + '/package.json', 'r') as f:
                 package_json = json.load(f)
 
             if 'jest' not in package_json.get('devDependencies', {}):
