@@ -33,7 +33,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
           setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
             const updatedFiles = [...files]
-            print('updatedFiles', updatedFiles)
+            console.log('updatedFiles', updatedFiles)
             let newKeysAdded = false
 
             for (const item of newOutputs) {
@@ -48,7 +48,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
                 updatedOutputKeyToData[item.key] = item
                 if (item.type !== 'text' && !item.inProgress) {
                   updatedFiles.push(item.pathFileName)
-                  print('updatedFiles 2', updatedFiles)
+                  console.log('updatedFiles 2', updatedFiles)
                 }
                 newKeysAdded = true
 
@@ -62,7 +62,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               setOutputsKeys(Object.keys(updatedOutputKeyToData))
               // remove all duplicates
               const uniqueFiles = [...new Set(updatedFiles)]
-              print('uniqueFiles', uniqueFiles)
+              console.log('uniqueFiles', uniqueFiles)
               setFiles(uniqueFiles)
             }
 
