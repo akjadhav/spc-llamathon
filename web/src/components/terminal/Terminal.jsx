@@ -8,12 +8,14 @@ SyntaxHighlighter.registerLanguage('javascript', js)
 const Terminal = ({ jobID }) => {
   const [fileContent, setFileContent] = useState(
     `
-      //This is the content of the file \n
-      function test() { \n
-        console.log('Hello World');\n
+      //This is the content of the file
+      function test() {
+        console.log('Hello World');
       }\n
     `,
   )
+
+  const [highlightedLineNumbers, setHighlightedLineNumbers] = useState(new Set([1, 2, 3, 6, 7, 8, 10, 11, 12, 13, 14]))
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -40,19 +42,29 @@ const Terminal = ({ jobID }) => {
   return (
     <div
       id='mock-terminal'
-      className='bg-gray-950 font-mono overflow-auto p-4 rounded-xl text-green-400 text-sm h-full'
+      className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
     >
-      <SyntaxHighlighter
-        language='javascript'
-        style={atomOneDark}
-        customStyle={{
-          backgroundColor: 'transparent',
-          padding: 0,
-          margin: 0,
-        }}
-      >
-        {fileContent}
-      </SyntaxHighlighter>
+      <div className='line-numbers relative flex-shrink-0 pt-4'>
+        {fileContent.split('\n').map((_, index) => (
+          <div
+            key={index}
+            className={`h-6 w-2 ${(highlightedLineNumbers.has(index)) && 'bg-red-500'}`}
+          />
+        ))}
+      </div>
+      <div className='pl-2 pt-4 flex-grow'>
+        <SyntaxHighlighter
+          language='javascript'
+          style={atomOneDark}
+          customStyle={{
+            backgroundColor: 'transparent',
+            padding: 0,
+            margin: 0,
+          }}
+        >
+          {fileContent}
+        </SyntaxHighlighter>
+      </div>
     </div>
   )
 }
