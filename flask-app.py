@@ -25,16 +25,9 @@ GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 # Global data list to store updates
-data = [
-    {
-        'key': "KEY",
-        'type': 'test',
-        'pathFileName': 'path/file',
-        'description': "path/file",
-        'inProgress': False,
-        'timestamp': datetime.now()
-    }
-]
+data = []
+
+repo_path = '/tmp/repo'
 
 bot = BotStatus()
 
@@ -84,11 +77,19 @@ def get_file_from_request():
         abort(400, description="File name is required")
     
     try:
+        file_path = os.path.join(repo_path, file_name)
+        
+        if not os.path.exists(file_path):
+            abort(404, description=f"File not found: {file_name}")
+        
+        with open(file_path, 'r') as file:
+            file_contents = file.read()
+        
         data = {
-            'type': 'test',
-            'data': "var x = 5;",
-            'linesFailed': [1,2,3,6,7,8],
-            'testStatus': { 'suite1': {'func1': False, 'func2': True }}
+            'type': 'test' if '.test.' in file_name else 'comment',
+            'data': file_contents,
+            'testStates': [{'test1': True}, {'test2': False}],
+            'fileName': file_name
         }
         
         return jsonify(data), 200
@@ -276,6 +277,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True, key='processing_start_update')
         print(f"Processing PR #{pr_number} from repo {repo_name}")
         # Clone the repo or fetch the latest changes
+        global repo_path
         repo_path = f'/tmp/{repo_name}'
         repo_url = f'https://{GITHUB_TOKEN}@github.com/{repo_name}.git'
 
