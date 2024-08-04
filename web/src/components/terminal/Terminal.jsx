@@ -44,12 +44,12 @@ const Terminal = ({ jobID, fileSelectedPath }) => {
     const fetchData = async () => {
       if (fileSelectedPath === undefined) return
       try {
-        const response = await fetch('/api/get_file', {
+        const response = await fetch('/api/get-file', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ fileSelectedPath }),
+          body: JSON.stringify({ fileName: fileSelectedPath }),
         });
     
         if (!response.ok) {
@@ -59,6 +59,7 @@ const Terminal = ({ jobID, fileSelectedPath }) => {
         const data = await response.json();
         console.log(data);
         // Handle the file content here
+        setFileContent(data.data)
       } catch (error) {
         console.error('Error:', error);
         // Handle the error here

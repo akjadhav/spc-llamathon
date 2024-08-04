@@ -25,7 +25,16 @@ GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 # Global data list to store updates
-data = []
+data = [
+    {
+        'key': "KEY",
+        'type': 'test',
+        'pathFileName': 'path/file',
+        'description': "path/file",
+        'inProgress': False,
+        'timestamp': datetime.now()
+    }
+]
 
 bot = BotStatus()
 

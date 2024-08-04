@@ -2,11 +2,11 @@ import React, { useState, useEffect, use } from 'react';
 import File from './File';
 import FilesRow from './FilesRow';
 
-const Files = ({ jobID, fileSelectedPath, setFileSelectedPath }) => {
-    const [files, setFiles] = useState([
-        new File("./", "index.js"),
-        new File("./", "page.js"),
-    ]);
+const Files = ({ jobID, fileSelectedPath, setFileSelectedPath, files, setFiles }) => {
+    // const [files, setFiles] = useState([
+    //     new File("./", "index.js"),
+    //     new File("./", "page.js"),
+    // ]);
 
 
     useEffect(() => {
@@ -29,14 +29,6 @@ const Files = ({ jobID, fileSelectedPath, setFileSelectedPath }) => {
 
         return () => clearInterval(intervalId);
     }, [jobID]);
-
-    // Effect to make sure the terminal is scrolled to the bottom on new output
-    useEffect(() => {
-        const terminal = document.getElementById('mock-terminal');
-        if (terminal) {
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-    }, [files]);
 
     return (
         <div className='h-full flex flex-col'>

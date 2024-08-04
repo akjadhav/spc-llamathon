@@ -26,19 +26,28 @@ const HistoryRow = ({ item }) => {
     <>
       {
         ["test", "comment"].includes(item.type) ?
-          <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 text-[#FDFCDC]'>
-            <div className='flex items-center'>
-              <div className={item.type === "comment" ? "text-teal-600" : "text-blue-500"}>
-                {item.type === 'comment' ? <FaAlignLeft /> : <SiSpeedtest />}
+          <div className='p-2 flex items-center border-2 rounded-lg border-[#FDFCDC] border-opacity-50 flex text-[#FDFCDC]'>
+
+            <div>
+              <div className='flex overflow-hidden items-center space-x-2'>
+                <div className={item.type === "comment" ? "text-teal-600" : "text-blue-500"}>
+                  {item.type === 'comment' ? <FaAlignLeft /> : <SiSpeedtest />}
+                </div>
+
+                <div className='py-1 truncates'>
+                  {/* line-clamp-2'> */}
+                  {item.pathFileName}
+                </div>
               </div>
 
-              <span className='text-md pl-2'>
-                {item.path}{item.fileName}
+              <span className="text-xs text-gray-500">
+                {item.timeStamp}
               </span>
             </div>
 
-            {loading && (
-              <div className='ml-auto opacity-75'>
+
+            <div className={`ml-auto ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
+              {loading ? (
                 <ClockLoader
                   color={color}
                   loading={loading}
@@ -47,22 +56,24 @@ const HistoryRow = ({ item }) => {
                   aria-label="Loading Spinner"
                   data-testid="loader"
                 />
-                {/* <FadeLoader
-                  color={color}
-                  loading={loading}
-                  width={5}
-                  height={15}
-                  radius={2}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                /> */}
-              </div>
-            )}
+              ) : (
+                <MdOutlineDone size={20} className="text-green-200" />
+              )}
+              {/* <FadeLoader
+                color={color}
+                loading={loading}
+                width={5}
+                height={15}
+                radius={2}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              /> */}
+            </div>
           </div>
           :
           <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
             <div className='flex-grow overflow-hidden'>
-              <div className='py-1 truncates'> 
+              <div className='py-1 truncates'>
                 {/* line-clamp-2'> */}
                 {item.description}
               </div>
