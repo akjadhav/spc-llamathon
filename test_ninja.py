@@ -82,10 +82,10 @@ def run_test_ninja(repo_path, node_list):
                 print("Running Niall's code")
 
                 # write result.stderr
-                with open("stderr.txt", "w") as f:
+                with open(repo_path + "/logs/stderr.txt", "w") as f:
                     f.write(result.stderr)
 
-                with open("stdout.txt", "w") as f:
+                with open(repo_path + "/logs/stdout.txt", "w") as f:
                     f.write(result.stdout)
 
 

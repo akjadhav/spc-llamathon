@@ -77,6 +77,7 @@ class Test_Generator:
         prompt += (
             "Please generate a comprehensive Jest test suite for the target function. You must write ALL test code inside the <<TESTS>> and <</TESTS>> tags.\n"
             "Make sure to include multiple test cases that cover different edge cases and scenarios for the target function.\n"
+            f"Take into account the {target_file_path} for import statements \n"
             "Ensure the output is formatted so that the Jest code is a valid file that can be run directly.\n"
             "Use <<TESTS>> to start and <</TESTS>> to end the test cases section.\n"
             "Ensure that the test suite is valid Jest code that can be run directly.\n"
@@ -90,7 +91,9 @@ class Test_Generator:
             prompt += f"\n\nNote: The previous test suite generated the following error. Please revise the test suite to resolve this error:\n{error_message}"
             prompt += f"\n\nHere is the previous test suite that you generated:\n{previous_test_code}"
 
-        self._send_data_to_flask(f"Deploying agent to generate tests for {self.func_name} in {target_file_path}")
+        rel_path = self.get_relative_path(target_file_path, self.repo_path)
+        print(f"Deploying agent to generate tests for {self.func_name}() in {rel_path}")
+        self._send_data_to_flask(f"Deploying agent to generate tests for {self.func_name} in '{rel_path}'")
         # Call the Baseten API with retries
         test_code = self._call_baseten_api(prompt)
 
@@ -120,16 +123,6 @@ class Test_Generator:
         # Parse the evaluation to get a boolean
         is_test_incorrect = "The test suite is incorrect" in evaluation
         return is_test_incorrect
-
-    def _get_relative_path(absolute_path, base_path):
-        # Ensure both paths are absolute
-        absolute_path = os.path.abspath(absolute_path)
-        base_path = os.path.abspath(base_path)
-
-        # Get the relative path
-        relative_path = os.path.relpath(absolute_path, base_path)
-        
-        return relative_path
             
     def execute_test(self, test_code, file_path=None):
         # Write the test code to a temporary file to check that it works before we add it to the main test file
@@ -212,6 +205,16 @@ class Test_Generator:
             
             return function_code
 
+    def get_relative_path(self, absolute_path, base_path):
+        # Ensure both paths are absolute
+        absolute_path = os.path.abspath(absolute_path)
+        base_path = os.path.abspath(base_path)
+
+        # Get the relative path
+        relative_path = os.path.relpath(absolute_path, base_path)
+        
+        return relative_path
+
     def generate_and_test(self, target_file_info, context_functions):
         error_message = None
         previous_test_code = None
@@ -235,8 +238,7 @@ class Test_Generator:
                 if self._is_test_incorrect(test_code, result):
                     previous_test_code = test_code
                     error_message = result
-
-                    self._send_data_to_flask(f"Redeploying agent to generate tests for {self.func_name} in {target_file_info[0]}")
+                    self._send_data_to_flask(f"Redeploying agent to generate tests for {self.func_name} in {self.get_relative_path(file_path, self.repo_path)}")
                     self._send_data_to_flask(f"Test is invalid! Attempt {attempt + 1}. Error: {result}")
                 else: 
                     print("LOG: Test is correct, but the function is incorrect. ")
