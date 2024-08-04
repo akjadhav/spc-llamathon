@@ -80,7 +80,7 @@ def extract_failed_tests(failed_res, jest_lines):
                     break
                     
             end_index = end_index if end_index != None else len(jest_lines)-1
-            failed_details.extend(range(start_index, end_index))
+            failed_details.extend(range(start_index, end_index+1))
 
     return failed_context, failed_details
 
