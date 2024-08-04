@@ -45,7 +45,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
                 // }
                 if (
                   item.type === 'test' &&
-                  !prevOutputKeyToData.contains(item.key)
+                  !prevOutputKeyToData.has(item.key)
                 ) {
                   // console
                   console.log('setting file selected path')
