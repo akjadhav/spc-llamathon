@@ -31,21 +31,31 @@ def clean_path(path, dir):
     return path.replace(dir, "")[1:]
 
 # Create graph for a single path
-def create_dependency_graph(paths, dir):
+def create_dependency_graph(paths, _dir):
     graph = nx.DiGraph()
     json_data = get_func_dependencies_json(paths)
     # pdb.set_trace()
+
+    p = None
+
+    all_nodes = {}
     
     for f, dependencies in json_data.items():
-        graph.add_node(Node(f, clean_path(dependencies["path"], dir), dependencies["start"], dependencies["end"]))
+        if p is None:
+            p = dependencies["path"]
+        a = Node(f, clean_path(dependencies["path"], _dir), dependencies["start"], dependencies["end"])
+        graph.add_node(a)
+        all_nodes[f] = a
+
+    e = None
 
     for f, dependencies in json_data.items():
-        a = Node(f, clean_path(dependencies["path"], dir), dependencies["start"], dependencies["end"])
+        a = all_nodes[f]
         for dep in dependencies["dependencies"]:
             # Note: Nodes are indexed by function name and file path
             # Line number is not included, since in this context it refers to
             # the function call location rather than definition location
-            b = Node(dep["name"], clean_path(dep["path"], dir), dep["start"], dep["end"])
+            b = all_nodes[dep["name"]]
             graph.add_edge(a, b)
 
     return graph
@@ -60,7 +70,8 @@ def get_js_file_paths(directory):
 
 def plot_graph(graph):
     nx.draw(graph, with_labels=True, node_color='lightblue', node_size=500, font_weight='bold', edge_color='gray')
-    plt.show()
+    # plt.show()
+    plt.savefig('graph.png')
 
 if __name__ == "__main__":
     dir = sys.argv[1]
