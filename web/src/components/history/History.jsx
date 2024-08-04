@@ -20,8 +20,8 @@ const History = ({ jobID }) => {
       'Test event',
       'text',
       './index.js',
+      "Sat, 03 Aug 2024 20:24:58 GMT",
       'Test event',
-      "time",
       false,
     ),
   })
@@ -43,6 +43,7 @@ const History = ({ jobID }) => {
               item.key,
               item.type,
               item.pathFileName,
+              item.timestamp,
               item.description,
               item.inProgress,
             )

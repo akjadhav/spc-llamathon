@@ -62,9 +62,13 @@ const HistoryRow = ({ item }) => {
           :
           <div className='text-xs px-1 flex items-center text-[#FDFCDC]'>
             <div className='flex-grow overflow-hidden'>
-              <div className='py-1 line-clamp-2'>
+              <div className='py-1 truncates'> 
+                {/* line-clamp-2'> */}
                 {item.description}
               </div>
+              <span className="text-xs text-gray-500">
+                {item.timeStamp}
+              </span>
             </div>
 
             <div className={`ml-2 flex-shrink-0 ${loading ? 'w-6' : 'w-6'}`}>
