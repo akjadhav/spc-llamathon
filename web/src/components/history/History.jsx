@@ -12,15 +12,17 @@ const History = ({ jobID }) => {
   //     new HistoryItem('test', './index.js', '', true),
   //   ])
 
-  const [outputKeys, setOutputsKeys] = useState(['Agent is live...'])
+  const [outputKeys, setOutputsKeys] = useState([
+    // 'Agent is live...'
+  ])
   const [outputKeyToData, setOutputKeyToData] = useState({
-    'Agent is live...': new HistoryItem(
-      'Agent is live...',
-      'text',
-      './index.js',
-      'Agent is live...',
-      false,
-    ),
+    // 'Agent is live...': new HistoryItem(
+    //   'Agent is live...',
+    //   'text',
+    //   './index.js',
+    //   'Agent is live...',
+    //   false,
+    // ),
   })
 
   useEffect(() => {
@@ -43,8 +45,6 @@ const History = ({ jobID }) => {
               item.inProgress,
             )
           })
-
-          console.log(newOutputs)
 
           setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
@@ -71,7 +71,7 @@ const History = ({ jobID }) => {
 
     fetchData()
 
-    const intervalId = setInterval(fetchData, 1000)
+    const intervalId = setInterval(fetchData, 5000)
 
     return () => clearInterval(intervalId)
   }, [])

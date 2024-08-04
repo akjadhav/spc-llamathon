@@ -1,12 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { FaTerminal, FaFile } from 'react-icons/fa';
 import { FaFileLines } from "react-icons/fa6";
 import Terminal from '../terminal/Terminal';
 import History from '../history/History';
 import Files from '../files/Files';
+import { VscSparkleFilled, VscCircleFilled } from 'react-icons/vsc';
+import { FaRobot, FaUser } from 'react-icons/fa';
+import { Pill } from '@thumbtack/thumbprint-react';
 
 const WorkspaceComponent = ({ jobID }) => {
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    const fetchAgentStatus = async () => {
+      try {
+        const response = await fetch(api_endpoint + '/' + jobID + '/status');
+        var jsonData = await response.json();
+
+        const status = jsonData.status;
+        console.log(status)
+        setStatus(status);
+      } catch (error) {
+        // console.error('Failed to fetch data:', error);
+      }
+    };
+
+    fetchAgentStatus();
+    const intervalId = setInterval(fetchAgentStatus, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [jobID]);
+
   return (
     <Tabs className='h-full flex flex-col bg-gray-950'>
       <TabList className='border-b border-neutral-600 flex pb-1 bg-gray-900'>
@@ -23,6 +48,33 @@ const WorkspaceComponent = ({ jobID }) => {
           <span>Files</span>
         </Tab>
       </TabList>
+      <div>
+        <div className='border-b border-neutral-600 flex gap-2 items-center px-4 py-2 text-md'>
+          <VscSparkleFilled />
+          {/* Chat */}
+          {status === 'RUNNING' && (
+            <Pill
+              color='yellow'
+              icon={<VscCircleFilled />}>
+              Working
+            </Pill>
+          )}
+          {status === 'COMPLETE' && (
+            <Pill
+              color='green'
+              icon={<VscCircleFilled />}>
+              Completed
+            </Pill>
+          )}
+          {status !== 'RUNNING' && status !== 'COMPLETE' && (
+            <Pill
+              color='blue'
+              icon={<VscCircleFilled />}>
+              Ready
+            </Pill>
+          )}
+        </div>
+      </div>
       <TabPanel>
         <History jobID={jobID} />
       </TabPanel>
