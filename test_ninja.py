@@ -8,6 +8,7 @@ import subprocess
 import requests
 import json
 from extract_test_data import extract_data
+import re
 
 def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
     url = 'http://localhost:5002/receive_data'
@@ -39,7 +40,7 @@ def clear_out_dupe_imports(file_path):
         file_content = file.read()
 
     # Regex to find all require statements
-    require_regex = re.compile(r"(const\s+\w+\s*=\s*require\(['\"].+?['\"]\);)")
+    require_regex = re.compile(r"^(const\s+\{\s*[\w\s,]*\s*\}\s*=\s*require\s*\(['\"].+?['\"]\);)", re.MULTILINE)
 
     # Store unique requires
     requires_set = set()
@@ -55,7 +56,7 @@ def clear_out_dupe_imports(file_path):
     # Remove all require statements from the original content
     new_content = require_regex.sub('', file_content).strip()
 
-    # Combine unique requires and the rest of the file content
+    # Combine unique requires and the rest of the file content, ensuring requires are at the top
     final_content = f"{unique_requires.strip()}\n\n{new_content}"
 
     # Write the updated content back to the file
@@ -101,6 +102,18 @@ def run_test_ninja(repo_path, node_list):
                 # Run the code and get the output
                 print("LOG: The final running of tests is occruing")
                 print("LOG: The main test file path is:", main_test_file_path)
+
+                # write main_test_file_path to a file
+                with open('before-parse_main_test_file_path.txt', 'w') as f:
+                    f.write(main_test_file_path)
+                
+                # Clear out duplicate imports in the test file
+                clear_out_dupe_imports(main_test_file_path)
+
+                with open('after-parse_main_test_file_path.txt', 'w') as f:
+                    f.write(main_test_file_path)
+
+
                 result = subprocess.run(['npx', 'jest', main_test_file_path], 
                         capture_output=True, 
                         text=True, 
@@ -115,11 +128,6 @@ def run_test_ninja(repo_path, node_list):
                     main_test_file_path
                 )
 
-                # Clear out duplicate imports in the test file
-                
-                # Clear out duplicate imports in the test file
-                clear_out_dupe_imports(main_test_file_path)
-                
                 print('====================')
                 print("Test Status Mapping:", test_status_mapping)
                 print("Failed Lines:", failed_lines)
@@ -144,8 +152,15 @@ def run_test_ninja(repo_path, node_list):
 
 if "__main__" == __name__:
     # TODO: give actual local repo path
-    repo_path = "spc-llamathon-example/utils"
-    path = "spc-llamathon-example/utils/math.js"
-    node_list = [GraphNode("multiply", path, 9, 11), GraphNode("sumOfSquares", path, 18, 21)]
-    run_test_ninja(repo_path, node_list)
+    # write main_test_file_path to a file
+    main_test_file_path = "/tmp/akjadhav/spc-llamathon-example/utils/math.test.js"
+    with open('before-parse_main_test_file_path.txt', 'w') as f:
+        f.write(main_test_file_path)
+    
+    # Clear out duplicate imports in the test file
+    pdb.set_trace()
+    clear_out_dupe_imports(main_test_file_path)
+
+    with open('after-parse_main_test_file_path.txt', 'w') as f:
+        f.write(main_test_file_path)
 
