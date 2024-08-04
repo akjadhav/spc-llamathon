@@ -114,7 +114,7 @@ const HistoryRow = ({ item }) => {
               />
             ) : (
               <>
-                {item.failed ? (
+                {item.failed || item.key.startsWith("failed_") ? (
                   <MdOutlineClose size={20} className='text-red-200' />
                 ) : (
                   <MdOutlineDone size={20} className='text-green-200' />
