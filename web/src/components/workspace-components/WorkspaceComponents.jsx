@@ -9,7 +9,7 @@ import { VscSparkleFilled, VscCircleFilled } from 'react-icons/vsc'
 import { FaRobot, FaUser } from 'react-icons/fa'
 import { Pill } from '@thumbtack/thumbprint-react'
 
-const WorkspaceComponent = ({ jobID }) => {
+const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) => {
   const [status, setStatus] = useState('');
 
   useEffect(() => {
@@ -71,6 +71,7 @@ const WorkspaceComponent = ({ jobID }) => {
           {status === 'ERROR' && (
             <Pill color='red' icon={<VscCircleFilled />}>
               Error
+              Ready
             </Pill>
           )}
         </div>
