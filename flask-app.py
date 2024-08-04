@@ -75,7 +75,7 @@ def receive_test_ninja_update():
         abort(400, description="No data received")
 
     if data:
-        add_text_update(data['text'], inProgress=data['inProgress'])
+        add_text_update(data['text'], inProgress=data['inProgress'], key=data['key'])
 
     return jsonify({"message": "Data received", "data": data}), 200
 
