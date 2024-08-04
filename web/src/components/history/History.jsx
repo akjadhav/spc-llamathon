@@ -6,14 +6,16 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
   const [outputKeys, setOutputsKeys] = useState([])
   const [outputKeyToData, setOutputKeyToData] = useState({})
 
-
-  const updateFiles = useCallback((newFiles) => {
-    setFiles(prevFiles => {
-      const uniqueFiles = [...new Set([...prevFiles, ...newFiles])]
-      console.log('uniqueFiles', uniqueFiles)
-      return uniqueFiles
-    })
-  }, [setFiles])
+  const updateFiles = useCallback(
+    (newFiles) => {
+      setFiles((prevFiles) => {
+        const uniqueFiles = [...new Set([...prevFiles, ...newFiles])]
+        //   console.log('uniqueFiles', uniqueFiles)
+        return uniqueFiles
+      })
+    },
+    [setFiles],
+  )
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,12 +26,21 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
         }
         const result = await response.json()
         if (result.data && result.data instanceof Array) {
-          const newOutputs = result.data.map((item) => new HistoryItem(
-            item.key, item.type, item.pathFileName, item.timestamp,
-            item.description, item.functionName, item.inProgress, item.failed
-          ))
+          const newOutputs = result.data.map(
+            (item) =>
+              new HistoryItem(
+                item.key,
+                item.type,
+                item.pathFileName,
+                item.timestamp,
+                item.description,
+                item.functionName,
+                item.inProgress,
+                item.failed,
+              ),
+          )
 
-          setOutputKeyToData(prevOutputKeyToData => {
+          setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
             const newFiles = []
             let newKeysAdded = false

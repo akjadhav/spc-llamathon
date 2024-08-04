@@ -17,7 +17,7 @@ const Terminal = ({ fileSelectedPath }) => {
       if (fileSelectedPath === undefined) return
 
       setLoading(true)
-      console.log("fetching file: ", fileSelectedPath)
+      // console.log("fetching file: ", fileSelectedPath)
       try {
         const response = await fetch('/api/get-file', {
           method: 'POST',
@@ -32,7 +32,7 @@ const Terminal = ({ fileSelectedPath }) => {
         }
 
         const data = await response.json()
-        console.log(data)
+        // console.log(data)
         // Handle the file content here
         setLoading(false)
         setFile(data)
@@ -157,7 +157,7 @@ describe('multiply function', () => {
       style={{ 'overflow-y': 'auto', height: '700px' }}>
       {loading && (
         <div className='absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-10'>
-          <ClipLoader color="white" />
+          <ClipLoader color='white' />
         </div>
       )}
       <div
@@ -171,30 +171,29 @@ describe('multiply function', () => {
               .map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 ${highlightedLineNumbers !== undefined &&
+                  className={`w-2 ${
+                    highlightedLineNumbers !== undefined &&
                     highlightedLineNumbers.has(index) &&
                     'bg-red-500'
-                    }`}
+                  }`}
                   style={{ height: '1.43em' }}
                 />
               ))}
         </div>
-        <div className="pl-2 text-gray-500 text-xs">
+        <div className='pl-2 text-gray-500 text-xs'>
           {file &&
-            file.data
-              .split('\n')
-              .map((_, index) => (
-                <div
-                  key={index}
-                  style={{
-                    height: '1.665em',
-                    display: 'flex',
-                    alignItems: 'flex-end'
-                  }}
-                >
-                  {index + 1}
-                </div>
-              ))}
+            file.data.split('\n').map((_, index) => (
+              <div
+                key={index}
+                style={{
+                  height: '1.665em',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                }}
+              >
+                {index + 1}
+              </div>
+            ))}
         </div>
         <div className='pl-2 flex-grow'>
           <SyntaxHighlighter
@@ -210,9 +209,9 @@ describe('multiply function', () => {
           </SyntaxHighlighter>
         </div>
       </div>
-      {file && Object.keys(file.testStatus).length > 0 &&
+      {file && Object.keys(file.testStatus).length > 0 && (
         <TestDisplay testStatus={file.testStatus} />
-      }
+      )}
 
       {/* Test Display Demo */}
       {/* {
