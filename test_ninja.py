@@ -12,15 +12,6 @@ from extract_test_data import extract_data
 def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
     url = 'http://localhost:5002/receive_data'
 
-    print("Sending data to flask")
-    print("testFileName:", testFileName)
-    print("test_status_mapping:", test_status_mapping)
-    print("failed_lines:", failed_lines)
-    print("--------------------")
-    print("type of testFileName:", type(testFileName))
-    print("type of test_status_mapping:", type(test_status_mapping))
-    print("type of failed_lines:", type(failed_lines))
-
     data = {
         'testFileName': testFileName,
         'testStatusMapping': test_status_mapping,
@@ -43,7 +34,7 @@ def get_relative_path(absolute_path, base_path):
     
     return relative_path
 
-def run_test_ninja(repo_path, node_list):    
+def run_test_ninja(repo_path, node_list):
     test_generator = Test_Generator(repo_path=repo_path)
     
     print("node file names")

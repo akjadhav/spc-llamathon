@@ -16,7 +16,8 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
         }
         const result = await response.json()
 
-        if (result.data) {
+        if (result.data && result.data instanceof Array) {
+
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,
@@ -24,6 +25,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               item.pathFileName,
               item.timestamp,
               item.description,
+              item.functionName,
               item.inProgress,
               item.failed
             )
@@ -37,10 +39,13 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
                 // check if item is test and is now not in progress but was before, we want to open the file
+                // if (item.type === 'test') {
+                //   console.log(prevOutputKeyToData[item.key])
+                //   console.log(item)
+                // }
                 if (
                   item.type === 'test' &&
-                  prevOutputKeyToData[item.key].inProgress &&
-                  !item.inProgress
+                  !prevOutputKeyToData.contains(item.key)
                 ) {
                   // console
                   console.log('setting file selected path')
@@ -95,7 +100,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
   return (
     <div
       id='mock-terminal'
-      className='bg-gray-950 custom-height font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
+      className='bg-gray-950 h-full max-h-full font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
     >
       {outputKeys.map((key, index) => (
         <HistoryRow key={index} item={outputKeyToData[key]}></HistoryRow>
