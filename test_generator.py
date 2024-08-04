@@ -4,6 +4,7 @@ import subprocess
 from dotenv import load_dotenv
 import pdb
 import utils
+import json
 
 load_dotenv()
 
@@ -109,6 +110,13 @@ class Test_Generator:
             test_file.write(test_code)
         
         try:
+            with open(repo_path + 'package.json', 'r') as f:
+                package_json = json.load(f)
+
+            if 'jest' not in package_json.get('devDependencies', {}):
+                print("Jest not found in devDependencies. Installing...")
+                subprocess.run(['npm', 'install', '--save-dev', 'jest'], check=True)
+
             result = subprocess.run(['npm', 'test', '--', test_file_path], capture_output=True, text=True)
             stdout = result.stdout
             stderr = result.stderr
@@ -162,10 +170,8 @@ class Test_Generator:
         previous_test_code = None
         target_function_code = self.read_functions_from_file(target_file_info[0], target_file_info[1])
         
-        
         for attempt in range(5):
             test_code = self.generate_test(target_function_code, target_file_info[0], context_functions, previous_test_code, error_message)
-            pdb.set_trace()
             extracted_tests = self._extract_tests(test_code)
             file_path = target_file_info[0]
 
