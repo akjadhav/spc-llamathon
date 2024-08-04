@@ -161,9 +161,9 @@ describe('multiply function', () => {
       )}
       <div
         id='mock-terminal'
-        className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
+        className='bg-gray-950 pt-4 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
       >
-        <div className='line-numbers relative flex-shrink-0 pt-4'>
+        <div>
           {file &&
             file.data
               .split('\n')
@@ -178,7 +178,24 @@ describe('multiply function', () => {
                 />
               ))}
         </div>
-        <div className='pl-2 pt-4 flex-grow'>
+        <div className="pl-2 text-gray-500 text-xs">
+          {file &&
+            file.data
+              .split('\n')
+              .map((_, index) => (
+                <div
+                  key={index}
+                  style={{
+                    height: '1.665em',
+                    display: 'flex',
+                    alignItems: 'flex-end'
+                  }}
+                >
+                  {index + 1}
+                </div>
+              ))}
+        </div>
+        <div className='pl-2 flex-grow'>
           <SyntaxHighlighter
             language='javascript'
             style={atomOneDark}
