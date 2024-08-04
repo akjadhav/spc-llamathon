@@ -17,9 +17,14 @@ def get_func_dependencies_json(paths):
     stdout, stderr = process.communicate()
     json_str = stdout.decode()
     stde = stderr.decode()
-    print("loading json:", json_str)
-    print(stde)
+    # print("loading json:", json_str)
+    # print(stde)
     data = json.loads(json_str)
+
+    # dump data
+    with open('tmp_data.json', 'w') as file:
+        json.dump(data, file)
+
     return data
 
 def clean_path(path, dir):
