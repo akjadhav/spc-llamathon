@@ -1,10 +1,10 @@
 import re
 
-def retrieve_output_text(file_path):
-    with open(file_path, 'r') as file:
-        sample_text = file.read()
+# def retrieve_output_text(file_path):
+#     with open(file_path, 'r') as file:
+#         sample_text = file.read()
     
-    return sample_text
+#     return sample_text
 
 def retrieve_jest_test_file(file_path):
     # Reading the file and storing its contents in a variable.
@@ -78,18 +78,20 @@ def extract_failed_tests(failed_res, jest_lines):
                     end_index = j
                     break
                     
-            failed_details.append((start_index, end_index != None and end_index or len(jest_lines)-1))
+            end_index = end_index if end_index != None else len(jest_lines)-1
+            failed_details.extend(range(start_index, end_index))
 
     return failed_context, failed_details
 
-def run(file_path, jest_path):
-    sample_text = retrieve_output_text(file_path)
+# def run(file_path, jest_path):
+def extract_data(test_out, jest_path):
+    # sample_text = retrieve_output_text(file_path)
 
     # Regular expression to recognize the start of a block and the end of the block
     block_pattern = re.compile(r'(  .+?)(?:\n\s*\n)', re.DOTALL)
 
     # Finding the first block in the sample text
-    match = block_pattern.search(sample_text)
+    match = block_pattern.search(test_out)
     block = match.group(1)
     res = map_suites_to_statuses(block)
     # extract failed tests
@@ -100,9 +102,14 @@ def run(file_path, jest_path):
     jest_lines = retrieve_jest_test_file(jest_path)
     failed_context, failed_details = extract_failed_tests(failed_res, jest_lines)
 
+    # { suite : { testName: bool }}, string of failed context, list of (line_start
     return res, failed_context, failed_details
 
 
-file_path = 'sample_data/stderr.txt'
+# file_path = 'sample_data/stderr.txt'
+test_out = """
+  ✓ multiply
+  ✓ sumOfSquares
+"""
 jest_path = 'sample_data/example.test.js'
-res, failed_context, failed_details = run(file_path, jest_path)
+res, failed_context, failed_details = extract_data(test_out, jest_path)

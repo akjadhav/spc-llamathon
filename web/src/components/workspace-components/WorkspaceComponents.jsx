@@ -9,7 +9,7 @@ import { VscSparkleFilled, VscCircleFilled } from 'react-icons/vsc'
 import { FaRobot, FaUser } from 'react-icons/fa'
 import { Pill } from '@thumbtack/thumbprint-react'
 
-const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) => {
+const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath, files, setFiles }) => {
   const [status, setStatus] = useState('')
 
   useEffect(() => {
@@ -77,13 +77,15 @@ const WorkspaceComponent = ({ jobID, fileSelectedPath, setFileSelectedPath }) =>
       </div>
 
       <TabPanel>
-        <History jobID={jobID} />
+        <History jobID={jobID} files={files} setFiles={setFiles} />
       </TabPanel>
       <TabPanel>
         <Files
           jobID={jobID}
           fileSelectedPath={fileSelectedPath}
           setFileSelectedPath={setFileSelectedPath}
+          files={files} 
+          setFiles={setFiles}
         />
       </TabPanel>
     </Tabs>

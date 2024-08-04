@@ -2,7 +2,7 @@ import React, { useState, useEffect, use } from 'react'
 import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
-const History = ({ jobID }) => {
+const History = ({ jobID, files, setFiles }) => {
   //   const [outputs, setOutputs] = useState([
   //     new HistoryItem('text', './index.js', 'Git Pull Request dectected', true),
   //     new HistoryItem('text', './index.js', 'Agent is live...', false),
@@ -26,7 +26,6 @@ const History = ({ jobID }) => {
         const result = await response.json()
 
         if (result.data) {
-          // console.log(result.data)
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,
@@ -40,6 +39,7 @@ const History = ({ jobID }) => {
 
           setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
+            const updatedFiles = [...files]
             let newKeysAdded = false
 
             for (const item of newOutputs) {
@@ -52,12 +52,18 @@ const History = ({ jobID }) => {
               } else {
                 // Add new item
                 updatedOutputKeyToData[item.key] = item
+                if (item.type !== "text" && !item.inProgress) {
+                  updatedFiles.push(item.pathFileName)
+                }
                 newKeysAdded = true
               }
             }
 
             if (newKeysAdded) {
               setOutputsKeys(Object.keys(updatedOutputKeyToData))
+              // remove all duplicates
+              const uniqueFiles = [...new Set(updatedFiles)]
+              setFiles(uniqueFiles)
             }
 
             return updatedOutputKeyToData

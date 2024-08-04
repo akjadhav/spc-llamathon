@@ -27,6 +27,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 # Global data list to store updates
 data = []
 
+repo_path = '/tmp/akjadhav/spc-llamathon-example'
+
 bot = BotStatus()
 
 def verify_github_signature(request):
@@ -67,7 +69,7 @@ def bot_status():
     response.headers['Content-Type'] = 'application/json'
     return response
 
-@app.route('/api/get_file', methods=['GET', 'POST'])
+@app.route('/api/get_file', methods=['POST'])
 def get_file_from_request():
     file_name = request.json.get('fileName')
     
@@ -75,23 +77,25 @@ def get_file_from_request():
         abort(400, description="File name is required")
     
     try:
-        # with open(file_name, 'r') as file:
-        #     content = file.read()
+        file_path = os.path.join(repo_path, file_name)
+        
+        if not os.path.exists(file_path):
+            abort(404, description=f"File not found at path: {file_path}")
+        
+        with open(file_path, 'r') as file:
+            file_contents = file.read()
         
         data = {
-            'type': 'test',
-            'data': "var x = 5;",
-            'testStatus': {'test1': False}
+            'type': 'test' if '.test.' in file_name else 'comment',
+            'data': file_contents,
+            'testStates': [{'test1': True}, {'test2': False}],
+            'fileName': file_name
         }
         
-        response = jsonify(data)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        return jsonify(data), 200
     
-    except FileNotFoundError:
-        abort(404, description=f"File {file_name} not found")
-    except IOError:
-        abort(500, description=f"Error reading file {file_name}")
+    except Exception as e:
+        abort(500, description=f"Error processing request: {str(e)}")
 
 @app.route('/api/update', methods=['GET'])
 def send_update():
@@ -273,6 +277,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True, key='processing_start_update')
         print(f"Processing PR #{pr_number} from repo {repo_name}")
         # Clone the repo or fetch the latest changes
+        global repo_path
         repo_path = f'/tmp/{repo_name}'
         repo_url = f'https://{GITHUB_TOKEN}@github.com/{repo_name}.git'
 
@@ -377,10 +382,10 @@ def push_changes_to_pr(repo, file_path, branch_name):
 def clean_up_local_repo(repo_path):
     try:
         add_text_update(f"Processing", inProgress=False, key='processing_start_update')
-        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=True)
-        print(f"Cleaning up local repository at {repo_path}...")
+        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=True)
+        print(f"Cleaning up local repository at {repo_path}")
         shutil.rmtree(repo_path)
-        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=False)
+        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=False)
         add_text_update(f"Clean up successful.", inProgress=False)
         print("Clean up successful.")
         bot.set_status('COMPLETE')
