@@ -63,7 +63,7 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
               Completed
             </Pill>
           )}
-          {status !== 'RUNNING' && status !== 'COMPLETE' && (
+          {status === 'ONLINE' && (
             <Pill color='blue' icon={<VscCircleFilled />}>
               Online
             </Pill>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, use } from 'react'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import TestDisplay from './TestDisplay'
 
 SyntaxHighlighter.registerLanguage('javascript', js)
 
@@ -147,39 +148,48 @@ describe('multiply function', () => {
   }, [file])
 
   return (
-    <div
-      id='mock-terminal'
-      className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
-    >
-      <div className='line-numbers relative flex-shrink-0 pt-4'>
-        {file &&
-          file.data
-            .split('\n')
-            .map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 ${highlightedLineNumbers !== undefined &&
-                  highlightedLineNumbers.has(index) &&
-                  'bg-red-500'
-                  }`}
-                style={{ height: '1.43em' }}
-              />
-            ))}
+    <div className='relative h-full'>
+      <div
+        id='mock-terminal'
+        className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
+      >
+        <div className='line-numbers relative flex-shrink-0 pt-4'>
+          {file &&
+            file.data
+              .split('\n')
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 ${highlightedLineNumbers !== undefined &&
+                    highlightedLineNumbers.has(index) &&
+                    'bg-red-500'
+                    }`}
+                  style={{ height: '1.43em' }}
+                />
+              ))}
+        </div>
+        <div className='pl-2 pt-4 flex-grow'>
+          <SyntaxHighlighter
+            language='javascript'
+            style={atomOneDark}
+            customStyle={{
+              backgroundColor: 'transparent',
+              padding: 0,
+              margin: 0,
+            }}
+          >
+            {file && file.data}
+            {/* {fileContent} */}
+          </SyntaxHighlighter>
+        </div>
       </div>
-      <div className='pl-2 pt-4 flex-grow'>
-        <SyntaxHighlighter
-          language='javascript'
-          style={atomOneDark}
-          customStyle={{
-            backgroundColor: 'transparent',
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          {file && file.data}
-          {/* {fileContent} */}
-        </SyntaxHighlighter>
-      </div>
+      {file &&
+        <TestDisplay testStatus={file.testStatus} />
+      }
+
+      {/* {
+        <TestDisplay testStatus={{ suite1: { func1: false, func2: true }, suite2: { func1: true, func2: true } }} />
+      } */}
     </div>
   )
 }
