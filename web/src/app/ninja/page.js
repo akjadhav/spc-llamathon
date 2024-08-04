@@ -5,6 +5,8 @@ import { useState } from 'react';
 
 import WorkspaceComponent from '../../components/workspace-components/WorkspaceComponents';
 import Terminal from '../../components/terminal/Terminal';
+import Icon from '../../app/icon.png'
+import Image from "next/image"; 
 
 const TestNinja = () => {
   // const [isInitialized, setIsInitialized] = React.useState(true);
@@ -15,8 +17,12 @@ const TestNinja = () => {
   return (
     <div className='bg-gray-900 flex flex-col w-screen h-screen text-white'>
       <div className='px-6 pt-4 w-full'>
-        <h1 className='font-bold text-4xl text-white text-center text-blue-500 chakra-petch-semibold'>TestNinja</h1>
+        <h1 className='font-bold text-4xl text-center text-blue-500 chakra-petch-semibold flex items-center justify-center'>
+          <Image src={Icon} alt='Icon' className='mr-2 w-10 h-10' />
+          <span className='text-white'>TestNinja</span>
+        </h1>
       </div>
+
 
       <div className='flex w-full h-full mx-auto px-6 pt-2 pb-4 '>
         <div className='pr-2 w-1/4'>

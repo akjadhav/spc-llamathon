@@ -2,6 +2,8 @@
 import React from 'react';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
+import Icon from './icon.png'
+import Image from "next/image";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,7 +43,10 @@ export default function Home() {
             }}></div>
         </div>
         <div className='flex flex-col h-full items-center justify-center relative z-10'>
-          <div className='relative text-center'>
+          <div className='relative text-center flex flex-col items-center justify-center'>
+            <div className='w-full flex justify-center pb-5'>
+              <Image src={Icon} alt='Icon' className='mr-2 w-32 h-32' />
+            </div>
             <h1 className='mb-8 text-6xl text-white chakra-petch-semibold'>TestNinja.</h1>
 
             <button
@@ -53,6 +58,7 @@ export default function Home() {
               Experience
             </button>
           </div>
+
         </div>
       </div>
     </>
