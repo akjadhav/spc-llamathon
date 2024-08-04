@@ -4,16 +4,19 @@ from parser import get_js_file_paths, create_dependency_graph
 import pdb
 
 def find_tree_root(G):
+    all = []
     # Find the root node
     for node in G.nodes:
         if G.in_degree(node) == 0:
-            return node
-    return None
+            all.append(node)
+    return all
 
 def get_traversal_list(G):
-    bfs_tree = nx.bfs_tree(G, find_tree_root(G))
-    bfs_nodes = list(bfs_tree.nodes())
-    return bfs_nodes
+    topo_sort = list(nx.topological_sort(G))
+    return topo_sort
+    # bfs_tree = nx.bfs_tree(G, find_tree_root(G)[0])
+    # bfs_nodes = list(bfs_tree.nodes())
+    # return bfs_nodes
 
 # Asssume graph is connected
 # `G` is a networkx graph 
@@ -35,25 +38,34 @@ def _get_subtree(G, root, items_changed):
 
 # Graph is not necessarily connected
 def get_target_subtrees(graph, node_list):
-    # G = nx.DiGraph()
     out = []
+    # pdb.set_trace()
     for component in nx.weakly_connected_components(graph):
         subgraph = graph.subgraph(component)
-        filtered_subgraph = _get_subtree(subgraph, find_tree_root(subgraph), node_list)
+        roots = find_tree_root(subgraph)
+        filtered_subgraph = nx.DiGraph()
+        for root in roots:
+            _filtered_subgraph = _get_subtree(subgraph, root, node_list)
+            filtered_subgraph = nx.compose(filtered_subgraph, _filtered_subgraph)
+
         if filtered_subgraph.number_of_nodes() == 0:
             continue
+        else:
+            pdb.set_trace()
 
-        print("is tree:", nx.is_tree(filtered_subgraph))
+        # print("is tree:", nx.is_tree(filtered_subgraph))
 
-        l = get_traversal_list(filtered_subgraph)
-        out += l
-    return l
+        out += get_traversal_list(filtered_subgraph)
+        # out += l
+    return out
 
 # Insertion point for flask-app
 def create_traversal_list_from_nodes(dir, node_list):
     paths = get_js_file_paths(dir)
-    G = create_dependency_graph(paths)
-    return get_target_subtrees(G, node_list)
+    G = create_dependency_graph(paths, dir)
+    out = get_target_subtrees(G, node_list)
+    pdb.set_trace()
+    return out
 
 if __name__ == "__main__":
     dir = "spc-llamathon-example/utils/"

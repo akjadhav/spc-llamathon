@@ -1,6 +1,23 @@
 const esprima = require('esprima');
 const fs = require('fs');
 
+function getJavaScriptFiles(dir, fileList = []) {
+  const files = fs.readdirSync(dir);
+
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+
+    if (stat.isDirectory()) {
+      getJavaScriptFiles(filePath, fileList);
+    } else if (stat.isFile() && path.extname(file) === '.js') {
+      fileList.push(filePath);
+    }
+  });
+
+  return fileList;
+}
+
 function parseCodeToAST(code) {
   return esprima.parseScript(code, { range: true, loc: true });
 }
@@ -96,7 +113,6 @@ function buildDependencyGraph(paths) {
               start: call.loc.start.line,
               end: call.loc.end.line
             })
-            // console.log("hello", call);
         } else if (callee.type === 'MemberExpression' && callee.object.type === 'Identifier' && functionMap.has(callee.object.name)) {
             // graph[name].dependencies.push(callee.object.name);
             graph[name].dependencies.push({
@@ -113,8 +129,9 @@ function buildDependencyGraph(paths) {
 }
 
 try {
-    const args = process.argv.slice(2);
-    const graph = buildDependencyGraph(args);
+    const paths = process.argv.slice(2);
+    // const paths = getJavaScriptFiles(args[0]);
+    const graph = buildDependencyGraph(paths);
 
     console.log(JSON.stringify(graph, null, 2));
   } catch (err) {

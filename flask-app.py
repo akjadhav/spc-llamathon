@@ -16,6 +16,8 @@ from graph_traversal import create_traversal_list_from_nodes
 from test_ninja import run_test_ninja
 from bot_status import BotStatus
 
+import pdb
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -394,12 +396,14 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 
-        # Agent that generates tests for all changed nodes is actited and runs here!
-        # node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
-        node_list = [GraphNode("multiply", "utils/math.js", 9, 22), GraphNode("sumOfSquares", "utils/math.js", 18, 21)]
+        # Agent that generates tests for all changed nodes is actited and runs
+        # here!
+        node_list = create_traversal_list_from_nodes(repo_path, all_changed_nodes)
+        # node_list = [GraphNode("multiply", "utils/math.js", 9, 22), GraphNode("sumOfSquares", "utils/math.js", 18, 21)]
 
         print("============ Node List ============")
-        print(node_list)
+        for node in node_list:
+            print(node.toString())
         print("===================================")
 
         add_text_update(f"Running TestNinja", inProgress=True)
