@@ -7,15 +7,15 @@ from graph_node import GraphNode
 import subprocess
 import requests
 import json
-# from extract_test_data import extract_data
+from extract_test_data import extract_data
 
 def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
     url = 'http://localhost:5002/receive_data'
 
     data = {
-        'testFileName': 'John Doe',
-        'age': 30,
-        'city': 'New York'
+        'testFileName': testFileName,
+        'testStatusMapping': test_status_mapping,
+        'failedLines': failed_lines
     }
 
     json_data = json.dumps(data)
@@ -72,17 +72,12 @@ def run_test_ninja(repo_path, node_list):
 
                 print("LOG: This is the stderr:", stderr)
 
-                # Then we finally send the output to Niall
-
-                # test_status_mapping, failed_context, failed_lines = extract_data(
-                #     stderr, # NAHUM LOOK HERE
-                #     main_test_file_path
-                # )
+                test_status_mapping, failed_context, failed_lines = extract_data(
+                    stderr,
+                    main_test_file_path
+                )
             
-                #TODO: send main_test_file_path
-                # TODO: send test_status_mapping , failed_lines for /get_file endpoint
-
-    
+                send_data_to_flask(main_test_file_path, test_status_mapping, failed_lines)
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))
