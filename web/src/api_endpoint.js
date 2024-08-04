@@ -1,1 +1,0 @@
-export const api_endpoint = `https://bb4f-67-188-146-74.ngrok-free.app`;
