@@ -46,6 +46,23 @@ def verify_github_signature(request):
 @app.route('/receive_data', methods=['POST'])
 def receive_data():
     data = request.get_json()
+
+    if not data:
+        abort(400, description="No data received")
+
+    if data.get('testFileName'):
+        add_test_file_update(data['testFileName'], "Test generated for " + data['testFileName'], inProgress=False)
+
+    if (data.get('failedLines') and data.get('testFileName') and data.get('testStatusMapping')):
+        print(f"Failed lines received for {data['testFileName']}: {data['failedLines']}")
+        print(f"Test status mapping for {data['testFileName']}: {data['testStatusMapping']}")
+
+        add_text_update(f"Ran tests from {data['testFileName']}", inProgress=False)
+        add_text_update(f"Identified failed lines in {data['testFileName']}", inProgress=False)
+
+        test_hash[data['testFileName']] = {'failedLines': data['failedLines'], 
+                                           'testStatusMapping': data['testStatusMapping']}
+
     return jsonify({"message": "Data received", "data": data}), 200
 
 @app.route('/webhook', methods=['POST'])
@@ -93,13 +110,13 @@ def get_file_from_request():
             file_contents = file.read()
 
         # TODO: fix hash finding code
-        test_hash[file_name] = file_contents
+        test_file_metadata = test_hash[file_name]
         
         data = {
             'type': 'test' if '.test.' in file_name else 'comment',
             'data': file_contents,
-            'testStatus': [{'test1': True}, {'test2': False}],
-            'failedLines': [],
+            'testStatus': test_file_metadata['testStatusMapping'],
+            'failedLines': test_file_metadata['failedLines'],
             'fileName': file_name
         }
         
