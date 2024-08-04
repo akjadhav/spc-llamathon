@@ -51,8 +51,15 @@ const History = ({ jobID }) => {
             let newKeysAdded = false
 
             for (const item of newOutputs) {
-               updatedOutputKeyToData[item.key] = item
-              if (!(item.key in prevOutputKeyToData)) {
+              if (item.key in prevOutputKeyToData) {
+                // Update only the inProgress field for existing items
+                updatedOutputKeyToData[item.key] = {
+                  ...prevOutputKeyToData[item.key],
+                  inProgress: item.inProgress,
+                }
+              } else {
+                // Add new item
+                updatedOutputKeyToData[item.key] = item
                 newKeysAdded = true
               }
             }

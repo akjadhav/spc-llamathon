@@ -1,6 +1,6 @@
 # ngrok http 5002
 
-from flask import Flask, request, jsonify # type: ignore
+from flask import Flask, request, jsonify, abort # type: ignore
 import hmac
 import hashlib
 import shutil
@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 
 from graph_node import GraphNode
 from graph_traversal import create_traversal_list_from_nodes
+from bot_status import BotStatus
 
 load_dotenv()
 
@@ -24,6 +25,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 # Global data list to store updates
 data = []
+
+bot = BotStatus()
 
 def verify_github_signature(request):
     signature = request.headers.get('X-Hub-Signature')
@@ -56,20 +59,53 @@ def webhook():
 
     return jsonify({'message': 'Event not handled'}), 200
 
+@app.route('/api/status', methods=['GET'])
+def bot_status():
+    data = bot.get_current_status()
+    response = jsonify(data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
+@app.route('/api/get_file', methods=['GET', 'POST'])
+def get_file_from_request():
+    file_name = request.json.get('fileName')
+    
+    if not file_name:
+        abort(400, description="File name is required")
+    
+    try:
+        # with open(file_name, 'r') as file:
+        #     content = file.read()
+        
+        data = {
+            'type': 'test',
+            'data': "var x = 5;",
+            'testStatus': {'test1': False}
+        }
+        
+        response = jsonify(data)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    
+    except FileNotFoundError:
+        abort(404, description=f"File {file_name} not found")
+    except IOError:
+        abort(500, description=f"Error reading file {file_name}")
+
 @app.route('/api/update', methods=['GET'])
 def send_update():
     response = jsonify(data)
     response.headers['Content-Type'] = 'application/json'
     return response
 
-def add_text_update(text, inProgress=False):
+def add_text_update(text, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
     data = [item for item in data if current_time - item['timestamp'] < timedelta(seconds=15)]
     
     data.append({
-        'key': text,
+        'key': key if key else text,
         'type': 'text',
         'pathFileName': 'N/A',
         'description': text,
@@ -217,7 +253,8 @@ def find_functions_in_file(file_path, changed_lines, repo_path, function_regex):
 
 def process_pull_request(repo_name, pr_number, head_ref, base_ref):
     try:
-        add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True)
+        bot.set_status('RUNNING')
+        add_text_update(f"Processing PR #{pr_number} from repo {repo_name}", inProgress=True, key='processing_start_update')
         print(f"Processing PR #{pr_number} from repo {repo_name}")
         # Clone the repo or fetch the latest changes
         repo_path = f'/tmp/{repo_name}'
@@ -225,39 +262,53 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         
         try:
             if os.path.exists(repo_path):
+                add_text_update("Pulling latest changes...", inProgress=True)
                 repo = Repo(repo_path)
                 origin = repo.remotes.origin
                 print("Attempting to pull latest changes...")
                 pull_info = origin.pull()
                 print(f"Pull result: {pull_info}")
+                add_text_update("Pulling latest changes...", inProgress=False)
             else:
+                add_text_update("Cloning the repository...", inProgress=True)
                 print("Cloning the repository...")
                 repo = Repo.clone_from(repo_url, repo_path)
                 origin = repo.remotes.origin
+                add_text_update("Cloning the repository...", inProgress=False)
         except GitCommandError as e:
+            bot.set_status('ERROR')
             print(f"Error processing PR: {e}")
             print(f"stderr output: {e.stderr}")
+            add_text_update(f"Error processing PR: {e}", inProgress=False)
             return
 
         # Fetch the PR branch
         try:
+            add_text_update(f"Fetching the PR branch {head_ref}...", inProgress=True)
             print(f"Fetching the PR branch {head_ref}...")
             origin.fetch(f'pull/{pr_number}/head:{head_ref}')
             repo.git.checkout(head_ref)
+            add_text_update(f"Fetching the PR branch {head_ref}...", inProgress=False)
         except GitCommandError as e:
+            bot.set_status('ERROR')
             print(f"Error fetching PR: {e}")
             return
 
         # Get all changed files between the base branch and the PR branch
         try:
             merge_base = repo.git.merge_base(base_ref, head_ref).strip()
+            add_text_update(f"Merge base identified: {merge_base}", inProgress=False)
             print(f"Merge base: {merge_base}")
             changed_files = repo.git.diff('--name-only', merge_base, head_ref).split('\n')
         except GitCommandError as e:
+            bot.set_status('ERROR')
             print(f"Error getting changed files: {e}")
             return
 
         print(f"Changed files: {changed_files}")
+
+        for file in changed_files:
+            add_text_update(f"File was changed: {file}", inProgress=False)
 
         all_changed_nodes = []
 
@@ -267,6 +318,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
                 print(parsed_diff)
                 for node in parsed_diff:
+                    add_text_update(f"Generated function node from changed code: {node}", inProgress=False)
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 
@@ -279,6 +331,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         clean_up_local_repo(repo_path)
     except (GitCommandError, Exception) as e:
         print(f"Error processing PR: {e}")
+        bot.set_status('ERROR')
         
         clean_up_local_repo(repo_path)
     # Example change: Append a comment to a file
@@ -299,10 +352,16 @@ def push_changes_to_pr(repo, file_path, branch_name):
 
 def clean_up_local_repo(repo_path):
     try:
+        add_text_update(f"Processing", inProgress=False, key='processing_start_update')
+        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=True)
         print(f"Cleaning up local repository at {repo_path}...")
         shutil.rmtree(repo_path)
+        add_text_update(f"Cleaning up local repository at {repo_path}...", inProgress=False)
+        add_text_update(f"Clean up successful.", inProgress=False)
         print("Clean up successful.")
+        bot.set_status('COMPLETE')
     except Exception as e:
+        bot.set_status('ERROR')
         print(f"Error cleaning up local repository: {e}")
 
 if __name__ == '__main__':
