@@ -81,6 +81,7 @@ class Test_Generator:
             "Please generate a comprehensive Jest test suite for the target function. You must write ALL test code inside the <<TESTS>> and <</TESTS>> tags.\n"
             "Make sure to include multiple test cases that cover different edge cases and scenarios for the target function.\n"
             f"Take into account the {target_file_path} for import statements. Use the following style for all imports. \n"
+            "Ensure that EACH function is imported on it's line. Do not import multiple functions in one line. \n"
             "Example: const { functionName }  = require('../utils/fileName'); \n"
 
             "Ensure the output is formatted so that the Jest code is a valid file that can be run directly.\n"
