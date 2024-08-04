@@ -6,7 +6,7 @@ import { useState } from 'react';
 import WorkspaceComponent from '../../components/workspace-components/WorkspaceComponents';
 import Terminal from '../../components/terminal/Terminal';
 
-const CodeNinja = () => {
+const TestNinja = () => {
   // const [isInitialized, setIsInitialized] = React.useState(true);
   const [jobID, setJobID] = useState('');
   const [fileSelectedPath, setFileSelectedPath] = useState(undefined);
@@ -30,4 +30,4 @@ const CodeNinja = () => {
   );
 };
 
-export default CodeNinja;
+export default TestNinja;

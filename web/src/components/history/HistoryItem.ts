@@ -1,4 +1,4 @@
-export type ItemType = 'text' | 'comment' | 'test'
+export type ItemType = 'text' | 'comment' | 'test' | 'edit'
 
 export class HistoryItem {
   key: string
@@ -22,7 +22,6 @@ export class HistoryItem {
     this.timeStamp = this.processTimeStamp(timeStamp);
     this.description = description
     this.inProgress = inProgress
-    
   }
 
   private processTimeStamp(timeStamp: string): string {

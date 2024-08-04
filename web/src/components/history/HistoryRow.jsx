@@ -5,7 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader'
 import { HistoryItem } from './HistoryItem'
 import { FaAlignLeft } from 'react-icons/fa'
 import { SiSpeedtest } from 'react-icons/si'
-import { MdOutlineDone } from 'react-icons/md'
+import { MdOutlineDone, MdEdit } from 'react-icons/md'
 
 const override = {
   display: 'block',
@@ -29,7 +29,9 @@ const HistoryRow = ({ item }) => {
           <div>
             <div className='flex overflow-hidden items-center space-x-2'>
               <div className={item.type === 'comment' ? 'text-teal-600' : 'text-blue-500'}>
-                {item.type === 'comment' ? <FaAlignLeft /> : <SiSpeedtest />}
+                {item.type === 'comment' && <FaAlignLeft />}
+                {item.type === 'test' && <SiSpeedtest />}
+                {item.type === 'edit' && <MdEdit />}
               </div>
 
               {item.type === 'test' && (

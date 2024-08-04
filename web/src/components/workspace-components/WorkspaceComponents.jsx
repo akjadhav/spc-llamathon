@@ -33,7 +33,7 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
 
   return (
     <Tabs className='h-full flex flex-col bg-gray-950'>
-      <TabList className='border-b border-neutral-600 flex pb-1 bg-gray-900'>
+      <TabList className='border-neutral-600 flex pb-1 bg-gray-900'>
         <Tab
           className='border-transparent cursor-pointer flex focus:outline-none hover:border-gray-300 hover:text-gray-600 items-center px-4 py-2 space-x-2 text-md'
           selectedClassName='bg-white text-black rounded-lg'
