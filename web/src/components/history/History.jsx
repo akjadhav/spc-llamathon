@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
@@ -6,52 +6,46 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
   const [outputKeys, setOutputsKeys] = useState([])
   const [outputKeyToData, setOutputKeyToData] = useState({})
 
+
+  const updateFiles = useCallback((newFiles) => {
+    setFiles(prevFiles => {
+      const uniqueFiles = [...new Set([...prevFiles, ...newFiles])]
+      console.log('uniqueFiles', uniqueFiles)
+      return uniqueFiles
+    })
+  }, [setFiles])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/update')
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const result = await response.json()
-
         if (result.data && result.data instanceof Array) {
-          const newOutputs = result.data.map((item) => {
-            return new HistoryItem(
-              item.key,
-              item.type,
-              item.pathFileName,
-              item.timestamp,
-              item.description,
-              item.functionName,
-              item.inProgress,
-              item.failed,
-            )
-          })
+          const newOutputs = result.data.map((item) => new HistoryItem(
+            item.key, item.type, item.pathFileName, item.timestamp,
+            item.description, item.functionName, item.inProgress, item.failed
+          ))
 
-          setOutputKeyToData((prevOutputKeyToData) => {
+          setOutputKeyToData(prevOutputKeyToData => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
-            const updatedFiles = [...files]
-            console.log('updatedFiles', updatedFiles)
+            const newFiles = []
             let newKeysAdded = false
 
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
-                // Update only the inProgress field for existing items
                 updatedOutputKeyToData[item.key] = {
                   ...prevOutputKeyToData[item.key],
                   inProgress: item.inProgress,
                 }
               } else {
-                // Add new item
                 updatedOutputKeyToData[item.key] = item
                 if (item.type !== 'text' && !item.inProgress) {
-                  updatedFiles.push(item.pathFileName)
-                  console.log('updatedFiles 2', updatedFiles)
+                  newFiles.push(item.pathFileName)
                 }
                 newKeysAdded = true
-
                 if (item.type === 'test') {
                   setFileSelectedPath(item.pathFileName)
                 }
@@ -60,10 +54,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
 
             if (newKeysAdded) {
               setOutputsKeys(Object.keys(updatedOutputKeyToData))
-              // remove all duplicates
-              const uniqueFiles = [...new Set(updatedFiles)]
-              console.log('uniqueFiles', uniqueFiles)
-              setFiles(uniqueFiles)
+              updateFiles(newFiles)
             }
 
             return updatedOutputKeyToData
@@ -75,11 +66,9 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
     }
 
     fetchData()
-
     const intervalId = setInterval(fetchData, 1500)
-
     return () => clearInterval(intervalId)
-  }, [])
+  }, [setFileSelectedPath, updateFiles])
 
   // Effect to make sure the terminal is scrolled to the bottom on new output
   useEffect(() => {
