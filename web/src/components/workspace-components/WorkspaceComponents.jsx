@@ -15,11 +15,10 @@ const WorkspaceComponent = ({ jobID }) => {
   useEffect(() => {
     const fetchAgentStatus = async () => {
       try {
-        const response = await fetch(api_endpoint + '/' + jobID + '/status')
+        const response = await fetch('/api/status')
         var jsonData = await response.json()
 
         const status = jsonData.status
-        console.log(status)
         setStatus(status)
       } catch (error) {
         // console.error('Failed to fetch data:', error);
