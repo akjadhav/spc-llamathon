@@ -43,6 +43,11 @@ def verify_github_signature(request):
     mac = hmac.new(bytes(GITHUB_SECRET, 'utf-8'), msg=request.data, digestmod=hashlib.sha1)
     return hmac.compare_digest(str(mac.hexdigest()), str(signature))
 
+@app.route('/receive_data', methods=['POST'])
+def receive_data():
+    data = request.get_json()
+    return jsonify({"message": "Data received", "data": data}), 200
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if not verify_github_signature(request):
@@ -93,8 +98,8 @@ def get_file_from_request():
         data = {
             'type': 'test' if '.test.' in file_name else 'comment',
             'data': file_contents,
-            'testStatus': [{'test1': True}, {'test2': False}],
-            'lineErrors': [],
+            'testStatusMapping': [{'test1': True}, {'test2': False}],
+            'failedLines': [],
             'fileName': file_name
         }
         
@@ -302,6 +307,8 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         repo_path = f'/tmp/{repo_name}'
         repo_url = f'https://{GITHUB_TOKEN}@github.com/{repo_name}.git'
 
+        clean_up_local_repo(repo_path)
+
         #raise Exception("Test error")
         
         try:
@@ -375,16 +382,15 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
         print(node_list)
         print("===================================")
 
-        add_text_update(f"Running test ninja", inProgress=True)
+        add_text_update(f"Running TestNinja", inProgress=True)
         run_test_ninja(repo_path, node_list)
-        add_text_update(f"Running test ninja", inProgress=False)
+        add_text_update(f"Running TestNinja", inProgress=False)
 
-        clean_up_local_repo(repo_path)
+        end_process(repo_path)
     except (GitCommandError, Exception) as e:
         print(f"Error processing PR: {e}")
         bot.set_status('ERROR')
         
-        clean_up_local_repo(repo_path)
     # Example change: Append a comment to a file
     # TODO change logic
     # example_file_path = os.path.join(repo_path, 'example_file.txt')
@@ -403,17 +409,18 @@ def push_changes_to_pr(repo, file_path, branch_name):
 
 def clean_up_local_repo(repo_path):
     try:
-        add_text_update(f"Processing", inProgress=False, key='processing_start_update')
-        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=True)
         print(f"Cleaning up local repository at {repo_path}")
         shutil.rmtree(repo_path)
-        add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=False)
-        add_text_update(f"Clean up successful.", inProgress=False)
         print("Clean up successful.")
-        bot.set_status('COMPLETE')
     except Exception as e:
         bot.set_status('ERROR')
         print(f"Error cleaning up local repository: {e}")
+
+def end_process(repo_path):
+    bot.set_status('COMPLETE')
+    add_text_update(f"Processing", inProgress=False, key='processing_start_update')
+    add_text_update(f"Cleaning up local repository at {repo_path}", inProgress=False)
+    add_text_update(f"Clean up successful.", inProgress=False)
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(24)

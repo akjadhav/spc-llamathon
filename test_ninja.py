@@ -5,7 +5,24 @@ from test_generator import Test_Generator
 import pdb 
 from graph_node import GraphNode
 import subprocess
-from extract_test_data import extract_data
+import requests
+import json
+# from extract_test_data import extract_data
+
+def send_data_to_flask(testFileName=None, test_status_mapping=None, failed_lines=None):
+    url = 'http://localhost:5002/receive_data'
+
+    data = {
+        'testFileName': 'John Doe',
+        'age': 30,
+        'city': 'New York'
+    }
+
+    json_data = json.dumps(data)
+
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.post(url, data=json_data, headers=headers)
 
 def run_test_ninja(repo_path, node_list):
     test_generator = Test_Generator(repo_path=repo_path)
@@ -51,23 +68,21 @@ def run_test_ninja(repo_path, node_list):
                         cwd=repo_path)
                 stderr = result.stderr
 
+                #TODO: send main_test_file_path
+
                 print("LOG: This is the stderr:", stderr)
 
                 # Then we finally send the output to Niall
 
-                test_status_mapping, failed_context, failed_lines = extract_data(
-                    stderr, # NAHUM LOOK HERE
-                    main_test_file_path
-                )
-                
+                # test_status_mapping, failed_context, failed_lines = extract_data(
+                #     stderr, # NAHUM LOOK HERE
+                #     main_test_file_path
+                # )
+            
+                #TODO: send main_test_file_path
+                # TODO: send test_status_mapping , failed_lines for /get_file endpoint
 
-                
-
-                
-
-        # We now need to access the file sytems and fetch the .test files to send to niall
-        # We need to run each of them 
-
+    
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import pdb
 import utils
 import json
-from extract_test_data import extract_data
+# from extract_test_data import extract_data
 
 load_dotenv()
 
