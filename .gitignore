@@ -174,3 +174,5 @@ node_modules
 package-lock.json
 
 llamathon-env
+
+web/src/api_endpoint.js

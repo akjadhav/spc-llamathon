@@ -44,7 +44,7 @@ const Terminal = ({ jobID, fileSelectedPath }) => {
     const fetchData = async () => {
       if (fileSelectedPath === undefined) return
       try {
-        const response = await fetch('/api/get-file', {
+        const response = await fetch('/api/get_file', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
