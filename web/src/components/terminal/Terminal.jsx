@@ -5,7 +5,7 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 SyntaxHighlighter.registerLanguage('javascript', js)
 
-const Terminal = ({ jobID, fileSelectedPath }) => {
+const Terminal = ({ fileSelectedPath }) => {
   // const [fileContent, setFileContent] = useState(
   //   `
   //     //This is the content of the file
@@ -19,30 +19,7 @@ const Terminal = ({ jobID, fileSelectedPath }) => {
 
   const [highlightedLineNumbers, setHighlightedLineNumbers] = useState(new Set())
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(api_endpoint + '/' + jobID + '/logs');
-  //       var jsonData = await response.json();
-
-  //       var logs = jsonData.response;
-
-  //       var setJsonData = logs.split('\n');
-
-  //       // setOutputs(setJsonData);
-  //     } catch (error) {
-  //       console.error('Failed to fetch data:', error);
-  //     }
-  //   };
-
-  //   if (jobID !== '') fetchData();
-  //   const intervalId = setInterval(fetchData, 1000);
-
-  //   return () => clearInterval(intervalId);
-  // }, [jobID]);
-
   useEffect(() => {
-
     const fetchData = async () => {
       if (fileSelectedPath === undefined) return
       try {
@@ -52,25 +29,23 @@ const Terminal = ({ jobID, fileSelectedPath }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ fileName: fileSelectedPath }),
-        });
+        })
 
         if (!response.ok) {
-          throw new Error('Failed to fetch file');
+          throw new Error('Failed to fetch file')
         }
 
-        const data = await response.json();
-        console.log(data);
+        const data = await response.json()
+        console.log(data)
         // Handle the file content here
         setFile(data)
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
         // Handle the error here
 
-        setFile(
-          {
-            'type': 'test',
-            'data':
-              `
+        setFile({
+          type: 'test',
+          data: `
 // Import the target function
 const add = require('./example').add;
 
@@ -166,10 +141,9 @@ describe('multiply function', () => {
   });
 });
               `,
-            'linesFailed': [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
-            'testStatus': { 'suite1': { 'func1': false, 'func2': true } }
-          }
-        )
+          linesFailed: [1, 2, 3, 6, 7, 8, 61, 62, 63, 64],
+          testStatus: { suite1: { func1: false, func2: true } },
+        })
       }
     }
 
@@ -186,13 +160,20 @@ describe('multiply function', () => {
       className='bg-gray-950 font-mono overflow-auto rounded-xl text-green-400 text-sm h-full flex'
     >
       <div className='line-numbers relative flex-shrink-0 pt-4'>
-        {file && file.data.split('\n').map((_, index) => (
-          <div
-            key={index}
-            className={`w-2 ${(highlightedLineNumbers !== undefined && highlightedLineNumbers.has(index)) && 'bg-red-500'}`}
-            style={{ height: '1.43em' }}
-          />
-        ))}
+        {file &&
+          file.data
+            .split('\n')
+            .map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 ${
+                  highlightedLineNumbers !== undefined &&
+                  highlightedLineNumbers.has(index) &&
+                  'bg-red-500'
+                }`}
+                style={{ height: '1.43em' }}
+              />
+            ))}
       </div>
       <div className='pl-2 pt-4 flex-grow'>
         <SyntaxHighlighter

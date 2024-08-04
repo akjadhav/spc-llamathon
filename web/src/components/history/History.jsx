@@ -2,7 +2,7 @@ import React, { useState, useEffect, use } from 'react'
 import HistoryRow from './HistoryRow'
 import HistoryItem from './HistoryItem'
 
-const History = ({ jobID, files, setFiles }) => {
+const History = ({ files, setFiles }) => {
   //   const [outputs, setOutputs] = useState([
   //     new HistoryItem('text', './index.js', 'Git Pull Request dectected', true),
   //     new HistoryItem('text', './index.js', 'Agent is live...', false),
@@ -52,7 +52,7 @@ const History = ({ jobID, files, setFiles }) => {
               } else {
                 // Add new item
                 updatedOutputKeyToData[item.key] = item
-                if (item.type !== "text" && !item.inProgress) {
+                if (item.type !== 'text' && !item.inProgress) {
                   updatedFiles.push(item.pathFileName)
                 }
                 newKeysAdded = true
