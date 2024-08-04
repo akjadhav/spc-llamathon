@@ -70,7 +70,7 @@ const WorkspaceComponent = ({ fileSelectedPath, setFileSelectedPath, files, setF
           )}
           {status === 'ERROR' && (
             <Pill color='red' icon={<VscCircleFilled />}>
-              Error Ready
+              Error
             </Pill>
           )}
         </div>
