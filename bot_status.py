@@ -24,6 +24,7 @@ class BotStatus:
             self.last_updated = datetime.now()
             return True
         except ValueError:
+            print("Invalid status")
             return False
 
     def get_current_status(self):
