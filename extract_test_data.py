@@ -93,17 +93,17 @@ def extract_data(test_out, jest_path):
     # Finding the first block in the sample text
     match = block_pattern.search(test_out)
     block = match.group(1)
-    res = map_suites_to_statuses(block)
+    test_status_mapping = map_suites_to_statuses(block)
     # extract failed tests
 
-    failed_res = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if not sub_v} for k, v in res.items()}
+    failed_res = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if not sub_v} for k, v in test_status_mapping.items()}
     failed_res = {k: v for k, v in failed_res.items() if v} # remove {} from values
 
     jest_lines = retrieve_jest_test_file(jest_path)
-    failed_context, failed_details = extract_failed_tests(failed_res, jest_lines)
+    failed_context, failed_lines = extract_failed_tests(failed_res, jest_lines)
 
     # { suite : { testName: bool }}, string of failed context, list of (line_start
-    return res, failed_context, failed_details
+    return test_status_mapping, failed_context, failed_lines
 
 
 # file_path = 'sample_data/stderr.txt'
