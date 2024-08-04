@@ -76,7 +76,7 @@ def bot_status():
     response.headers['Content-Type'] = 'application/json'
     return response
 
-@app.route('/api/get_file', methods=['GET', 'POST'])
+@app.route('/api/get_file', methods=['POST'])
 def get_file_from_request():
     file_name = request.json.get('fileName')
     
@@ -84,9 +84,6 @@ def get_file_from_request():
         abort(400, description="File name is required")
     
     try:
-        # with open(file_name, 'r') as file:
-        #     content = file.read()
-        
         data = {
             'type': 'test',
             'data': "var x = 5;",
@@ -94,14 +91,10 @@ def get_file_from_request():
             'testStatus': { 'suite1': {'func1': False, 'func2': True }}
         }
         
-        response = jsonify(data)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        return jsonify(data), 200
     
-    except FileNotFoundError:
-        abort(404, description=f"File {file_name} not found")
-    except IOError:
-        abort(500, description=f"Error reading file {file_name}")
+    except Exception as e:
+        abort(500, description=f"Error processing request: {str(e)}")
 
 @app.route('/api/update', methods=['GET'])
 def send_update():
