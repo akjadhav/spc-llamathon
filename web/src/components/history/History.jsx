@@ -100,7 +100,9 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
   return (
     <div
       id='mock-terminal'
-      className='bg-gray-950 h-full max-h-full font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
+      className='bg-gray-950 custom-height font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
+      style={{ "overflow-y": "auto", "height": "700px"}}
+
     >
       {outputKeys.map((key, index) => (
         <HistoryRow key={index} item={outputKeyToData[key]}></HistoryRow>
