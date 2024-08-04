@@ -21,6 +21,9 @@ class GraphNode:
     def toString(self):
         return f"In {self.file_path}, function {self.func_name} from lines {self.line_start}:{self.line_end} changed."
     
+    def getFuncName(self):
+        return self.func_name
+    
     def __str__(self):
         return self.key
     

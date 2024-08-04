@@ -193,7 +193,7 @@ def add_comment_update(pathFileName, text, inProgress=False, key=None):
         'timestamp': current_time
     })
 
-def add_comment_file_update(pathFileName, text, node, inProgress=False, key=None):
+def add_generate_update(pathFileName, text, node, inProgress=False, key=None):
     current_time = datetime.now()
     
     global data
@@ -437,7 +437,7 @@ def process_pull_request(repo_name, pr_number, head_ref, base_ref):
                 parsed_diff = parse_diff_for_filenames_and_functions(diff, repo_path)
                 print(parsed_diff)
                 for node in parsed_diff:
-                    add_comment_file_update(file, f"Generated function node from changed code: {node}", node, inProgress=False)
+                    add_generate_update(file, f"Generated function node from changed code: {node}", node.getFuncName(), inProgress=False)
                     print(f"{node.toString()}")
                 all_changed_nodes.extend(parsed_diff)
 
