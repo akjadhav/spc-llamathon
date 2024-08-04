@@ -39,13 +39,13 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
                 // check if item is test and is now not in progress but was before, we want to open the file
-                // if (item.type === 'test') {
-                //   console.log(prevOutputKeyToData[item.key])
-                //   console.log(item)
-                // }
+                if (item.type === 'test') {
+                  console.log(prevOutputKeyToData[item.key])
+                  console.log(item)
+                }
                 if (
                   item.type === 'test' &&
-                  !prevOutputKeyToData.hasOwnProperty(item.key)
+                  prevOutputKeyToData[item.key] === undefined
                 ) {
                   // console
                   console.log('setting file selected path')
