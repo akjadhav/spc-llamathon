@@ -17,7 +17,6 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
         const result = await response.json()
 
         if (result.data && result.data instanceof Array) {
-
           const newOutputs = result.data.map((item) => {
             return new HistoryItem(
               item.key,
@@ -27,31 +26,18 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               item.description,
               item.functionName,
               item.inProgress,
-              item.failed
+              item.failed,
             )
           })
 
           setOutputKeyToData((prevOutputKeyToData) => {
             const updatedOutputKeyToData = { ...prevOutputKeyToData }
             const updatedFiles = [...files]
+            print('updatedFiles', updatedFiles)
             let newKeysAdded = false
 
             for (const item of newOutputs) {
               if (item.key in prevOutputKeyToData) {
-                // check if item is test and is now not in progress but was before, we want to open the file
-                // if (item.type === 'test') {
-                //   console.log(prevOutputKeyToData[item.key])
-                //   console.log(item)
-                // }
-                if (
-                  item.type === 'test' &&
-                  !prevOutputKeyToData.has(item.key)
-                ) {
-                  // console
-                  console.log('setting file selected path')
-                  setFileSelectedPath(item.pathFileName)
-                }
-
                 // Update only the inProgress field for existing items
                 updatedOutputKeyToData[item.key] = {
                   ...prevOutputKeyToData[item.key],
@@ -62,8 +48,13 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
                 updatedOutputKeyToData[item.key] = item
                 if (item.type !== 'text' && !item.inProgress) {
                   updatedFiles.push(item.pathFileName)
+                  print('updatedFiles 2', updatedFiles)
                 }
                 newKeysAdded = true
+
+                if (item.type === 'test') {
+                  setFileSelectedPath(item.pathFileName)
+                }
               }
             }
 
@@ -71,6 +62,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
               setOutputsKeys(Object.keys(updatedOutputKeyToData))
               // remove all duplicates
               const uniqueFiles = [...new Set(updatedFiles)]
+              print('uniqueFiles', uniqueFiles)
               setFiles(uniqueFiles)
             }
 
@@ -101,8 +93,7 @@ const History = ({ jobID, files, setFiles, setFileSelectedPath }) => {
     <div
       id='mock-terminal'
       className='bg-gray-950 custom-height font-mono overflow-auto p-4 text-green-400 text-sm w-full space-y-2'
-      style={{ "overflow-y": "auto", "height": "700px"}}
-
+      style={{ 'overflow-y': 'auto', height: '700px' }}
     >
       {outputKeys.map((key, index) => (
         <HistoryRow key={index} item={outputKeyToData[key]}></HistoryRow>

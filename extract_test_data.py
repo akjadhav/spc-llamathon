@@ -98,21 +98,58 @@ def extract_data(test_out, jest_path):
     match = block_pattern.search(test_out)
     block = match.group(1)
     test_status_mapping = map_suites_to_statuses(block)
-    # extract failed tests
 
     failed_res = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if not sub_v} for k, v in test_status_mapping.items()}
     failed_res = {k: v for k, v in failed_res.items() if v} # remove {} from values
 
     failed_context, failed_lines = extract_failed_tests(failed_res, jest_lines)
 
-    # # { suite : { testName: bool }}, string of failed context, list of (line_start
     return test_status_mapping, failed_context, failed_lines
 
 
-# # file_path = 'sample_data/stderr.txt'
-# test_out = """
-#   ✓ multiply
-#   ✓ sumOfSquares
-# """
-# jest_path = 'sample_data/example.test.js'
-# res, failed_context, failed_details = extract_data(test_out, jest_path)
+if __name__ == '__main__':
+    test_out = """
+FAIL utils/math.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    /private/tmp/akjadhav/spc-llamathon-example/utils/math.test.js:144
+    import { sumOfSquares } from './math.js';
+    ^^^^^^
+
+    SyntaxError: Cannot use import statement outside a module
+
+      at Runtime.createScriptFromCode (../../../../opt/homebrew/lib/node_modules/jest/node_modules/jest-runtime/build/index.js:1505:14)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        0.129 s
+    """
+    jest_path = 'sample_data/example.test.js'
+    res, failed_context, failed_details = extract_data(test_out, jest_path)
+
+    print(res)
+    print(failed_context)
+    print(failed_details)

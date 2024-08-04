@@ -34,6 +34,34 @@ def get_relative_path(absolute_path, base_path):
     
     return relative_path
 
+def clear_out_dupe_imports(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        file_content = file.read()
+
+    # Regex to find all require statements
+    require_regex = re.compile(r"(const\s+\w+\s*=\s*require\(['\"].+?['\"]\);)")
+
+    # Store unique requires
+    requires_set = set()
+    unique_requires = ''
+
+    # Process file content to remove duplicates
+    for match in require_regex.finditer(file_content):
+        require_statement = match.group(1)
+        if require_statement not in requires_set:
+            requires_set.add(require_statement)
+            unique_requires += f"{require_statement}\n"
+
+    # Remove all require statements from the original content
+    new_content = require_regex.sub('', file_content).strip()
+
+    # Combine unique requires and the rest of the file content
+    final_content = f"{unique_requires.strip()}\n\n{new_content}"
+
+    # Write the updated content back to the file
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(final_content)
+
 def run_test_ninja(repo_path, node_list):
     test_generator = Test_Generator(repo_path=repo_path)
     
@@ -83,21 +111,32 @@ def run_test_ninja(repo_path, node_list):
 
 
                 test_status_mapping, failed_context, failed_lines = extract_data(
-                    result.stderr, # NAHUM LOOK HERE
+                    result.stderr,
                     main_test_file_path
                 )
 
+                # Clear out duplicate imports in the test file
+                
+                # Clear out duplicate imports in the test file
+                clear_out_dupe_imports(main_test_file_path)
+                
+                print('====================')
+                print("Test Status Mapping:", test_status_mapping)
+                print("Failed Lines:", failed_lines)
                         
-                print('About to send data')
+                print('About to send data from ninja to flask')
                 send_data_to_flask(get_relative_path(main_test_file_path, repo_path), test_status_mapping, failed_lines)
 
-                # write result.stderr
-                with open(repo_path + "/logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stderr.txt"), "w") as f:
+                # Create the directory if it doesn't exist
+                os.makedirs(repo_path + "/test-logs/utils", exist_ok=True)
+
+                # Write result.stderr
+                with open(repo_path + "/test-logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stderr.txt"), "w") as f:
                     f.write(result.stderr)
 
-                with open(repo_path + "/logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stdout.txt"), "w") as f:
+                # Write result.stdout
+                with open(repo_path + "/test-logs/" + get_relative_path(main_test_file_path, repo_path).replace(".test.js", "-stdout.txt"), "w") as f:
                     f.write(result.stdout)
-
 
     except Exception as e:
         print("Failed to generate a passing test:", str(e))
